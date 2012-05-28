@@ -68,7 +68,7 @@ var xgui = function ( p ) {
 	container.addEventListener( 'mousedown', function ( event ) {
 
 		// fix for textfields
-		if (event.target == container) {
+		if (event.target == container || event.target == canvas) {
 			if (mouseHitId != null) {
 				if (pool[mouseHitId].name != "InputText" && pool[mouseHitId].name != "DropDown") {
 					event.preventDefault();
