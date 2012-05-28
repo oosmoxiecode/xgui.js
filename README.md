@@ -32,6 +32,8 @@ This code creates a "xgui" and adds it to the document.body, makes a HSlider, bi
 </script>
 ```
 
+So when you drag the slider testObject.x and testObject.y will be set to the value of the slider.
+
 More examples to come. For now look in */examples/testbed.html* for some idea of how to use it.
 
 It currently includes these elements:
@@ -43,7 +45,7 @@ RadioButtonGroup,
 CheckBox,
 Knob,
 ColorPicker,
-ColorPicker,
+ColorPicker2,
 TrackPad,
 Button,
 ImageButton,
