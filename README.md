@@ -2,6 +2,7 @@ xgui.js
 =======
 
 Some simple gui stuff to try and make js experimentation a bit easier.
+
 The idea is to be able to quickly set up a bunch of sliders, knobs, colorPickers, etc. and bind the values of these to objects or functions.
 
 It gives you a bunch of gui stuff, like these(click screenshot to open):
@@ -31,24 +32,24 @@ This code creates a "xgui" and adds it to the document.body, makes a HSlider, bi
 </script>
 ```
 
-More examples to come. For now look in */examples/testbed.html* for some ideas of how to use it.
+More examples to come. For now look in */examples/testbed.html* for some idea of how to use it.
 
 It currently includes these elements:
-HSlider
-VSlider
-Label
-RadioButton
-RadioButtonGroup
-CheckBox
-Knob
-ColorPicker
-ColorPicker
-TrackPad
-Button
-ImageButton
-Graph
-Stepper
-InputText
-DropDown
-Matrix
-RangeSlider
+**HSlider,
+VSlider,
+Label,
+RadioButton,
+RadioButtonGroup,
+CheckBox,
+Knob,
+ColorPicker,
+ColorPicker,
+TrackPad,
+Button,
+ImageButton,
+Graph,
+Stepper,
+InputText,
+DropDown,
+Matrix,
+RangeSlider.**
