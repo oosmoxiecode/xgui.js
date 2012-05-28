@@ -32,3 +32,23 @@ This code creates a "xgui" and adds it to the document.body, makes a HSlider, bi
 ```
 
 More examples to come. For now look in */examples/testbed.html* for some ideas of how to use it.
+
+It currently includes these elements:
+* HSlider
+* VSlider
+* Label
+* RadioButton
+* RadioButtonGroup
+* CheckBox
+* Knob
+* ColorPicker
+* ColorPicker
+* TrackPad
+* Button
+* ImageButton
+* Graph
+* Stepper
+* InputText
+* DropDown
+* Matrix
+* RangeSlider

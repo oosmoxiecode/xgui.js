@@ -61,6 +61,7 @@ var xgui = function ( p ) {
 		}
 
 		o.mouseDown(m.x-o.x,m.y-o.y);
+
 	}, false );
 
 
@@ -76,7 +77,7 @@ var xgui = function ( p ) {
 				event.preventDefault();
 			}
 		}
-
+		
 		var m = canvas.relMouseCoords(event);
 
 		for (var i=0; i<pool.length; ++i ) {
@@ -97,8 +98,6 @@ var xgui = function ( p ) {
 				}
 			}
 		}
-
-
 		
 	}, false );
 
@@ -456,6 +455,7 @@ var xgui = function ( p ) {
 		this.div.appendChild( this.dropdown );
 
 		this.dropdown.onchange = this.onChange;
+		this.dropdown.onfocus = this.onFocus;
 
 		this.draw();
 	}
@@ -467,6 +467,10 @@ var xgui = function ( p ) {
 		var o = pool[this.id];
 		o.value.v = this.value;
 		o.value.updateBind();
+	}
+
+	this.DropDown.prototype.onFocus = function( event ) {
+		mouseHitId = this.id;
 	}
 
 	this.DropDown.prototype.draw = function() {
