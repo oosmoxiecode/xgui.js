@@ -23,7 +23,6 @@
 		// xgui test
 		//var gui = new xgui( {width: 640, backgroundColor: "rgb(65, 104, 137)", frontColor: "rgb(153, 193, 226)", dimColor: "rgb(90, 137, 177)"} );
 		//var gui = new xgui( {width: 640, backgroundColor: "#000000", frontColor: "#ffffff", dimColor: "#333333"} );
-
 		var gui = new xgui( {width: 640} );
 
 		// add to dom
@@ -109,21 +108,18 @@
 
 
 		var rs0 = new gui.RangeSlider( {x:400, y:224, min:20} );
-		//var rs1 = new gui.RangeSlider( {x:520, y:224, value1:2.60, value2:8.40, min:0, max:10, decimals: 2} );
 		var rs1 = new gui.RangeSlider( {x:520, y:224, value1:-20, value2:20, min:-400, max:100, decimals: 0} );
-		//var h4 = new gui.HSlider( {x:520, y:224, value: -30, min: -50, max: 100} );
 
 
 		setInterval(tempUpdate, 1000/60);
-
-		var test = 0;
 
 		// test bind
 		var testObj = {x: 50, y: 75};
 		function testFunction (value1) {
 			console.log("testFunction", value1, testObj.x, testObj.y);
 		}
-		l0.value.bind(testObj, "x");
+
+		l0.value.bind(testObj, "y");
 		l0.value.receiver = true;
 		l0.updateInterval = 40;
 
@@ -153,7 +149,7 @@
 			//testObj.x = ( 0.7+Math.random()*0.3 );
 			testObj.x = (Math.sin(test+=0.03)*75);//+Math.random()*20-10;
 			var v = Math.round(Math.random());
-			testObj.y = v;
+			testObj.y = "Label with value: " + Math.round(testObj.x);
 
 			gui.update();
 		}
