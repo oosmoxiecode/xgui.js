@@ -1,10 +1,10 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 5.0 Transitional//EN">
 <HTML>
  <HEAD>
-  <TITLE>xgui testbed</TITLE>
+  <TITLE>xgui.js testbed</TITLE>
 	<META NAME="Generator" CONTENT="EditPlus">
 	<META NAME="Author" CONTENT="oosmoxiecode">
-	<META NAME="Keywords" CONTENT="xgui testbed">
+	<META NAME="Keywords" CONTENT="xgui.js testbed">
 	<style type="text/css">
 		body {
 			background:#cdcdcd;
@@ -21,19 +21,24 @@
 	<script>
 
 		// xgui test
-		//var gui = new xgui( {width: 640, backgroundColor: "rgb(65, 104, 137)", frontColor: "rgb(153, 193, 226)", dimColor: "rgb(90, 137, 177)"} );
-		//var gui = new xgui( {width: 640, backgroundColor: "#000000", frontColor: "#ffffff", dimColor: "#333333"} );
-		var gui = new xgui( {width: 640} );
+		var gui = new xgui( {width: 640, height: 260} );
+		// you can change colors like this:
+		//var gui = new xgui( {width: 640, height: 260, backgroundColor: "rgb(65, 104, 137)", frontColor: "rgb(153, 193, 226)", dimColor: "rgb(90, 137, 177)"} );
+		//var gui = new xgui( {width: 640, height: 260, backgroundColor: "#000000", frontColor: "#ffffff", dimColor: "#333333"} );
 
 		// add to dom
 		document.body.appendChild( gui.getDomElement() );
 		
 		// bunch of test elements
+
+		// HSlider
 		var h0 = new gui.HSlider( {x:10, y:20, value: 20, min:20, max:100} );
 		var h1 = new gui.HSlider( {x:10, y:40, value: 80} );
 
+		// Label
 		var l0 = new gui.Label( {x: 10, y: 58, text: "Generic Label"} );
 
+		// RadioButton
 		var radioGroup = new gui.RadioButtonGroup();
 		radioGroup.add( new gui.RadioButton( {x: 140, y: 20, text: "Radio(group 1) - 1", selected: false } ) );
 		radioGroup.add( new gui.RadioButton( {x: 140, y: 35, text: "Radio(group 1) - 2", selected: true } ) );
@@ -43,39 +48,49 @@
 		radioGroup2.add( new gui.RadioButton( {x: 280, y: 20, text: "Radio(group 2) - 1", selected: false } ) );
 		radioGroup2.add( new gui.RadioButton( {x: 280, y: 35, text: "Radio(group 2) - 2", selected: false } ) );
 
+		// CheckBox
 		var c0 = new gui.CheckBox( {x: 10, y: 80, text: "Checkbox A" } );
 		var c1 = new gui.CheckBox( {x: 10, y: 95, text: "Checkbox B", selected: true } );
 		var c2 = new gui.CheckBox( {x: 10, y: 110, text: "Checkbox C" } );
 
+		// Knob
 		var k0 = new gui.Knob( {x: 10, y: 140, radius: 20, value: -80, min: -200, max: 200 } );
 		var k1 = new gui.Knob( {x: 65, y: 150, radius: 10, value: 0.75, min: 0, max: 1, decimals: 2 } );
 		var k2 = new gui.Knob( {x: 100, y: 150, radius: 10, value: 0.35, min: 0, max: 1, decimals: 2 } );
 
+		// VSlider
 		var v0 = new gui.VSlider( {x: 140, y: 80, value: 50} );
 		var v1 = new gui.VSlider( {x: 160, y: 80, value: 20} );
 		var v2 = new gui.VSlider( {x: 180, y: 80, value: 80, min:20, max:100} );
 		var v3 = new gui.VSlider( {x: 200, y: 80, value: 60, min: -1150, max: 300} );
 
+		// ColorPicker
 		var cp0 = new gui.ColorPicker( {x: 230, y: 80 } );
 
+		// TrackPad
 		var tp0 = new gui.TrackPad( {x: 350, y: 80, min: 10, max: 100 } );
 
+		// Buttom
 		var b0 = new gui.Button( {x: 420, y: 20, text: "Test Button" } );
 		var b1 = new gui.Button( {x: 420, y: 40, text: "Another Button" } );
 
+		// HSlider
 		var h2 = new gui.HSlider( {x:10, y:200, value: 240, min: 0, max: 255} );
 		var h3 = new gui.HSlider( {x:10, y:220, value: 250, min: -1000, max: 1000} );
 
+		// ColorPicker2
 		var cp1 = new gui.ColorPicker2( {x: 140, y: 200 } );
 		var cp2 = new gui.ColorPicker2( {x: 140, y: 220 } );
 
+		// Graph
 		var g0 = new gui.Graph( {x: 230, y: 140, max: 100, min: -100 } );
 
+		// Stepper
 		var s0 = new gui.Stepper( {x: 230, y: 200, value: 5500 } );
 		var s1 = new gui.Stepper( {x: 230, y: 212, value: -2560 } );
 		var s2 = new gui.Stepper( {x: 230, y: 224, value: 390 } );
 
-		// image buttons
+		// ImageButton
 		var l1 = new gui.Label( {x: 310, y: 200, text: "ImageButton's" } );
 
 		var image0 = new Image();
@@ -96,66 +111,72 @@
 		};
 		image2.src = "assets/flag_fr.jpg";
 
-
+		// InputText
 		var it0 = new gui.InputText( {x: 470, y: 80, text: "Input field 1" } );
 		var it1 = new gui.InputText( {x: 470, y: 103, text: "Input field 2" } );
 
+		// DropDown
 		var dd0 = new gui.DropDown( {x: 470, y: 126, values: ["v0","v1","v2","v3","v4"], texts: ["Value 0","Value 1","Value 2","Value 3", "Value 4"] } );
 		var dd1 = new gui.DropDown( {x: 350, y: 166, values: ["Dropdown 2","Value 0","Value 1","Value 2","Value 3","Value 4","Value 5","Value 6"] } );
 
+		// Matrix
 		var m0 = new gui.Matrix( {x: 470, y: 166} );
 		var m1 = new gui.Matrix( {x: 530, y: 166, w: 3, h: 3, array: [ [1,0,0],[0,1,0],[0,0,1] ]} );
 
-
+		// RangeSlider
 		var rs0 = new gui.RangeSlider( {x:400, y:224, min:20} );
 		var rs1 = new gui.RangeSlider( {x:520, y:224, value1:-20, value2:20, min:-400, max:100, decimals: 0} );
 
 
-		setInterval(tempUpdate, 1000/60);
-
-		// test bind
-		var testObj = {x: 50, y: 75};
+		// Set up some stuff to test with
+		var testObj0 = {x: 20, y: 80};
+		var testObj1 = {a: 50, b: 75};
 		var test = 0;
-		function testFunction (value1) {
-			console.log("testFunction", value1, testObj.x, testObj.y);
+
+		function testFunction (value) {
+			console.log("testFunction called", value);
 		}
 
-		l0.value.bind(testObj, "y");
+		// Bind some values (basic)
+		h0.value.bind(testObj0, "x");
+		h1.value.bind(testObj0, "y");
+
+		// You could also bind several properties, like: someSlider.value.bind(scale, "x", "y", "z");
+
+		// You can also bind values to a function, like
+		//h0.value.bind(testFunction);
+
+		// Note. some elements have two value's. Like RangeSlider and TrackPad, those are called 'value1' and 'value2' as opposed to the usual 'value'.
+
+		// Some values can also be "receiver's", it means if you change the value by code it can update the gui-element at a given interval.
+		// Graph is a typical element meant to be a receiver, for example
+		g0.value.bind(testObj1, "a");
+		g0.value.receiver = true; // receiver = true, means the value is updated from the bound object/property and not the other way around.
+		g0.updateInterval = 100; // How many ms between updates, 1000 is One second for example.
+		
+		l0.value.bind(testObj1, "b");
 		l0.value.receiver = true;
 		l0.updateInterval = 40;
 
-		g0.value.bind(testObj, "x");
-		g0.value.receiver = true;
-		g0.updateInterval = 100;
-
-/*		k0.value.bind(testObj, "y");
-		k0.value.receiver = true;
-		k0.updateInterval = 10;
-*/
-		//cp1.value.bind(testObj, "y");
-		//cp1.value.receiver = true;
-		//cp0.updateInterval = 10;
-
-		/*tp0.value1.bind(testObj, "x");
-		tp0.value1.receiver = true;
-		tp0.updateInterval = 10;
-
-		tp0.value2.bind(testObj, "y");
-		tp0.value2.receiver = true;
-		tp0.updateInterval = 10;*/
-		//c2.value.bind(testObj, "y");
-		//c2.value.receiver = true;
+		// Run a dummy update
+		setInterval(tempUpdate, 1000/60);
 
 		function tempUpdate() {
-			//testObj.x = ( 0.7+Math.random()*0.3 );
-			testObj.x = (Math.sin(test+=0.03)*75);//+Math.random()*20-10;
-			var v = Math.round(Math.random());
-			testObj.y = "Label with value: " + Math.round(testObj.x);
 
+			testObj1.a = Math.sin(test+=0.03)*75; // sin wave for the Graph
+			testObj1.b = "Label with value: " + Math.round(testObj1.a); // number for the Label
+
+			// If you have any receiver's you must 'update()' xgui.
 			gui.update();
+
+			// test the binds
+			//console.log(testObj0.x, testObj0.y);
+
 		}
 	
 	</script>
+
+	Testbed for <a href="https://github.com/oosmoxiecode/xgui.js">xgui.js</a>.
 
 </body>
 </HTML>
