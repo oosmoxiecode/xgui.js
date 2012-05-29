@@ -38,7 +38,7 @@ var xgui = function ( p ) {
 	container.appendChild(canvas);
 
 
-	container.addEventListener( 'mousemove', function ( event ) {
+	document.addEventListener( 'mousemove', function ( event ) {
 		event.preventDefault();
 
 		if (!mouseDown) {
@@ -101,7 +101,7 @@ var xgui = function ( p ) {
 		
 	}, false );
 
-	container.addEventListener( 'mouseup', function ( event ) {
+	document.addEventListener( 'mouseup', function ( event ) {
 		mouseDown = false;
 		if (mouseHitId != null) {
 			var o = pool[mouseHitId];
