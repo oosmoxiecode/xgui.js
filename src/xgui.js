@@ -442,6 +442,7 @@ var xgui = function ( p ) {
 		this.dropdown.style.outlineStyle = "none"
 		this.dropdown.style.color = bgColor;
 		this.dropdown.style.webkitAppearance = "none";
+		this.dropdown.style.webkitBorderRadius = "0px";
 		this.dropdown.style.background = "rgba(0,0,0,0)";//"transparent";
 		this.dropdown.style.borderStyle = "solid";
 		this.dropdown.style.width = "119px";
