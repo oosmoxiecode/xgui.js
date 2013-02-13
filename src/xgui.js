@@ -610,13 +610,15 @@ var xgui = function ( p ) {
 		context.fillStyle = bgColor;
 		context.fillRect(this.x,this.y,this.width,this.height);
 		
+		var addy = Math.round( Math.max(0, this.height - 11)*0.5 );
+
 		// -
 		context.fillStyle = frontColor;
 		if (this.mouseDownMinus) context.fillStyle = bgColor;
 		context.fillRect(this.x+this.bx,this.y+1,10,this.height-2);
 		context.fillStyle = bgColor;
 		if (this.mouseDownMinus) context.fillStyle = frontColor;
-		context.fillRect(this.x+this.bx+2,this.y+4,6,2);
+		context.fillRect(this.x+this.bx+2,this.y+4+addy,6,2);
 
 		// +
 		context.fillStyle = frontColor;
@@ -624,15 +626,15 @@ var xgui = function ( p ) {
 		context.fillRect(this.x+this.bx+11,this.y+1,10,this.height-2);
 		context.fillStyle = bgColor;
 		if (this.mouseDownPlus) context.fillStyle = frontColor;
-		context.fillRect(this.x+this.bx+13,this.y+4,6,2);
-		context.fillRect(this.x+this.bx+15,this.y+2,2,6);
+		context.fillRect(this.x+this.bx+13,this.y+4+addy,6,2);
+		context.fillRect(this.x+this.bx+15,this.y+2+addy,2,6);
 
 		// label
 		context.fillStyle = frontColor;
 		context.font = font;
 		context.textBaseline = "alphabetic";
 		context.textAlign = "center";
-		context.fillText(this.value.v.toFixed(this.decimals), this.x+this.bx/2, this.y+9);
+		context.fillText(this.value.v.toFixed(this.decimals), this.x+this.bx/2, this.y+9+addy);
 		
 	}
 
@@ -988,8 +990,8 @@ var xgui = function ( p ) {
 		Base.call( this, p );
 
 		this.name = "ColorPicker2";
-		this.framewidth = 10;
-		this.frameheight = 10;
+		this.framewidth = p.framewidth || 10;
+		this.frameheight = p.frameheight || 10;
 		this.colorwidth = p.width || 100;
 		this.colorheight = p.height || 30;
 		this.width = this.framewidth;
@@ -1024,11 +1026,13 @@ var xgui = function ( p ) {
 		context.fillRect(this.x, this.y, this.framewidth, this.frameheight);
 
 		// label
+		var addy = Math.round( Math.max(0, this.frameheight - 11)*0.5 );
+
 		context.fillStyle = bgColor;
 		context.font = font;
 		context.textBaseline = "alphabetic";
 		context.textAlign = "left";
-		context.fillText("#"+this.value.v.toUpperCase(), this.x+this.framewidth+4, this.y+9);
+		context.fillText("#"+this.value.v.toUpperCase(), this.x+this.framewidth+4, this.y+9+addy);
 
 		if (this.open) {
 			var extray = 1;
@@ -1185,6 +1189,8 @@ var xgui = function ( p ) {
 		Base.call( this, p );
 
 		this.name = "ColorPicker";
+		this.framewidth = p.framewidth || 10;
+		this.frameheight = p.frameheight || 10;		
 		this.width = p.width || 100;
 		this.height = p.height || 20;
 		this.r = p.r || 255;
@@ -1199,7 +1205,7 @@ var xgui = function ( p ) {
 	this.ColorPicker.prototype.constructor = this.ColorPicker;
 
 	this.ColorPicker.prototype.draw = function() {
-		context.clearRect(this.x,this.y,this.width,this.height+14);
+		context.clearRect(this.x,this.y,this.width,this.height+this.frameheight+4);
 
 		// frame
 		context.strokeStyle = bgColor;
@@ -1241,17 +1247,19 @@ var xgui = function ( p ) {
 		// current color
 		context.strokeStyle = bgColor;
 		context.lineWidth = 2.0;
-		context.strokeRect(this.x, this.y+this.height+4, 10, 10);
+		context.strokeRect(this.x, this.y+this.height+4, this.framewidth, this.frameheight);
 		
 		context.fillStyle = "#"+this.value.v;
-		context.fillRect(this.x, this.y+this.height+4, 10, 10);
+		context.fillRect(this.x, this.y+this.height+4, this.framewidth, this.frameheight);
 
 		// label
+		var addy = Math.round( Math.max(0, this.frameheight - 10)*0.5 );
+
 		context.fillStyle = bgColor;
 		context.font = font;
 		context.textBaseline = "alphabetic";
 		context.textAlign = "left";
-		context.fillText("#"+this.value.v.toUpperCase(), this.x+14, this.y+this.height+13);
+		context.fillText("#"+this.value.v.toUpperCase(), this.x+this.framewidth+4, this.y+this.height+13+addy);
 
 	}
 
