@@ -38,7 +38,22 @@ var xgui = function ( p ) {
 	container.appendChild(canvas);
 
 
-	document.addEventListener( 'mousemove', function ( event ) {
+	document.addEventListener( 'mousemove', onMouseMove, false );
+	container.addEventListener( 'mousedown', onMouseDown, false );
+	document.addEventListener( 'mouseup', onMouseUp, false );
+
+	/*document.addEventListener( 'touchmove', function ( event ) {
+		onMouseMove(event.touches[0]);
+	}, false );
+	container.addEventListener( 'touchstart', function ( event ) {
+		onMouseDown(event.touches[0]);
+	}, false );
+	document.addEventListener( 'touchend', function ( event ) {
+		onMouseUp(event.touches[0]);
+	}, false );*/
+
+	function onMouseMove ( event ) {
+		
 		event.preventDefault();
 
 		if (!mouseDown) {
@@ -62,10 +77,9 @@ var xgui = function ( p ) {
 
 		o.mouseDown(m.x-o.x,m.y-o.y);
 
-	}, false );
+	}
 
-
-	container.addEventListener( 'mousedown', function ( event ) {
+	function onMouseDown ( event ) {
 
 		// fix for textfields
 		if (event.target == container || event.target == canvas) {
@@ -98,16 +112,18 @@ var xgui = function ( p ) {
 				}
 			}
 		}
-		
-	}, false );
+				
+	}
 
-	document.addEventListener( 'mouseup', function ( event ) {
+	function onMouseUp ( event ) {
+		
 		mouseDown = false;
 		if (mouseHitId != null) {
 			var o = pool[mouseHitId];
 			o.mouseUp();
 		}
-	}, false );
+
+	}
 
 
 	/*
@@ -155,11 +171,13 @@ var xgui = function ( p ) {
 
 	}
 
-	Value.prototype.updateBind = function() {
+	Value.prototype.updateBind = function( onMouseUp ) {
+		var mouseup = onMouseUp || false;
+
 		for (var i=0; i<this.bindArray.length; ++i ) {
 			var bind = this.bindArray[i];
 			if (typeof bind == "function") {
-				bind(this.v);
+				bind(this.v, mouseup);
 			} else if (typeof bind == "object") {	
 				var obj = bind[0]
 				for (var j=1; j<bind.length; ++j ) {
@@ -245,7 +263,7 @@ var xgui = function ( p ) {
 	}
 
 	this.Matrix.prototype.mouseUp = function() {
-
+		this.value.updateBind(true);
 	}
 
 
@@ -367,7 +385,7 @@ var xgui = function ( p ) {
 	}
 
 	this.RangeSlider.prototype.mouseUp = function() {
-
+		this.value.updateBind(true);
 	}
 
 	/**
@@ -659,6 +677,8 @@ var xgui = function ( p ) {
 		this.lastMouseX = null;
 		this.lastMouseY = null;
 
+		this.value.updateBind(true);
+
 		this.draw();
 	}
 
@@ -774,6 +794,7 @@ var xgui = function ( p ) {
 	}
 
 	this.ImageButton.prototype.mouseUp = function() {
+		this.value.updateBind(true);
 		this.mouseIsDown = false;
 		this.value.v = this.mouseIsDown;
 		this.value.updateBind();
@@ -833,9 +854,9 @@ var xgui = function ( p ) {
 	}
 
 	this.Button.prototype.mouseUp = function() {
+		this.value.updateBind(true);
 		this.mouseIsDown = false;
 		this.value.v = this.mouseIsDown;
-		this.value.updateBind();
 		this.draw();
 	}
 
@@ -952,7 +973,7 @@ var xgui = function ( p ) {
 	}
 
 	this.TrackPad.prototype.mouseUp = function() {
-
+		this.value.updateBind(true);
 	}
 
 	/*
@@ -1148,6 +1169,7 @@ var xgui = function ( p ) {
 		}
 
 		this.mousehack = true;
+		this.value.updateBind(true);
 	}
 
 
@@ -1246,7 +1268,7 @@ var xgui = function ( p ) {
 	}
 
 	this.ColorPicker.prototype.mouseUp = function() {
-
+		this.value.updateBind(true);
 	}
 
 	/*
@@ -1358,6 +1380,7 @@ var xgui = function ( p ) {
 	this.Knob.prototype.mouseUp = function() {
 		this.lastMouseX = null;
 		this.lastMouseY = null;
+		this.value.updateBind(true);
 	}
 
 	/*
@@ -1413,7 +1436,7 @@ var xgui = function ( p ) {
 	}
 
 	this.CheckBox.prototype.mouseUp = function() {
-
+		this.value.updateBind(true);
 	}
 
 	/*
@@ -1497,7 +1520,7 @@ var xgui = function ( p ) {
 	}
 
 	this.RadioButton.prototype.mouseUp = function() {
-
+		this.value.updateBind(true);
 	}
 
 	this.RadioButton.prototype.mouseMove = function() {
@@ -1584,7 +1607,7 @@ var xgui = function ( p ) {
 	}
 
 	this.HSlider.prototype.mouseUp = function() {
-
+		this.value.updateBind(true);
 	}
 
 
@@ -1675,7 +1698,7 @@ var xgui = function ( p ) {
 	}
 
 	this.VSlider.prototype.mouseUp = function() {
-
+		this.value.updateBind(true);
 	}
 
 
