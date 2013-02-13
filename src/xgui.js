@@ -387,7 +387,8 @@ var xgui = function ( p ) {
 	}
 
 	this.RangeSlider.prototype.mouseUp = function() {
-		this.value.updateBind(true);
+		this.value1.updateBind(true);
+		this.value2.updateBind(true);		
 	}
 
 	/**
@@ -979,7 +980,8 @@ var xgui = function ( p ) {
 	}
 
 	this.TrackPad.prototype.mouseUp = function() {
-		this.value.updateBind(true);
+		this.value1.updateBind(true);
+		this.value2.updateBind(true);		
 	}
 
 	/*
