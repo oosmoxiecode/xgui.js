@@ -881,8 +881,8 @@ var xgui = function ( p ) {
 		this.max = p.max || 1;
 		this.range = this.max - this.min;
 		var center = ((this.range/2)-this.max)*-1;
-		this.value1 = new Value(center);
-		this.value2 = new Value(center);
+		this.value1 = new Value(p.value1 || center);
+		this.value2 = new Value(p.value2 || center);
 		this.draw();
 	}
 
