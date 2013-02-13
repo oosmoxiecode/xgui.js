@@ -813,7 +813,7 @@ var xgui = function ( p ) {
 		this.name = "Button";
 		this.fullWidth = 0;
 		this.width = this.fullWidth;
-		this.height = 14;
+		this.height = Math.max(p.height, 14) || 14;
 		this.text = p.text || "";
 		this.mouseIsDown = false;
 		this.value = new Value(this.mouseIsDown);
@@ -837,12 +837,14 @@ var xgui = function ( p ) {
 		context.fillRect(this.x, this.y, this.width, this.height);
 
 		// label
+		var addy = Math.round( Math.max(0, this.height - 14)*0.5 );
+
 		context.fillStyle = bgColor;
 		if (this.mouseIsDown) context.fillStyle = frontColor;
 		context.font = font;
 		context.textBaseline = "alphabetic";
 		context.textAlign = "left";
-		context.fillText(this.text, this.x+4, this.y+11);
+		context.fillText(this.text, this.x+4, this.y+11+addy);
 		var labelWidth = context.measureText(this.text);
 		this.width = this.fullWidth + labelWidth.width + 9;
 
@@ -1395,9 +1397,9 @@ var xgui = function ( p ) {
 		this.name = "CheckBox";
 		this.text = p.text || "";
 		this.value = new Value(p.selected || false);
-		this.fullWidth = 10;
+		this.fullWidth = p.width || 10;
 		this.width = this.fullWidth,
-		this.height = 10;
+		this.height = p.height || 10;
 		this.draw();
 	}
 
@@ -1416,11 +1418,13 @@ var xgui = function ( p ) {
 		context.fillRect(this.x+2,this.y+2,this.fullWidth-4,this.height-4);		
 
 		// label
+		var addy = Math.round( Math.max(0, this.height - 11)*0.5 );
+
 		context.fillStyle = bgColor;
 		context.font = font;
 		context.textBaseline = "alphabetic";
 		context.textAlign = "left";
-		context.fillText(this.text, this.x+this.fullWidth+2, this.y+9);
+		context.fillText(this.text, this.x+this.fullWidth+2, this.y+9+addy);
 		var labelWidth = context.measureText(this.text);
 		this.width = this.fullWidth + labelWidth.width + 3;
 	}
@@ -1481,9 +1485,9 @@ var xgui = function ( p ) {
 		this.group = null;
 		this.text = p.text || "";
 		this.value = new Value(p.selected || false);
-		this.fullWidth = 18;
+		this.fullWidth = p.width || 18;
 		this.width = this.fullWidth;
-		this.height = 10;
+		this.height = p.height || 10;
 		this.draw();
 	}
 
@@ -1502,11 +1506,13 @@ var xgui = function ( p ) {
 			context.fillRect(this.x+2,this.y+2,(this.fullWidth/2)-3,this.height-4);		
 		}
 		// label
+		var addy = Math.round( Math.max(0, this.height - 11)*0.5 );
+
 		context.fillStyle = bgColor;
 		context.font = font;
 		context.textBaseline = "alphabetic";
 		context.textAlign = "left";
-		context.fillText(this.text, this.x+this.fullWidth+2, this.y+9);
+		context.fillText(this.text, this.x+this.fullWidth+2, this.y+9+addy);
 		var labelWidth = context.measureText(this.text);
 		this.width = this.fullWidth + labelWidth.width + 3;
 	}
