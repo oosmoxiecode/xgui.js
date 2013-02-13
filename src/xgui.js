@@ -303,18 +303,20 @@ var xgui = function ( p ) {
 		context.fillStyle = bgColor;
 		context.fillRect(this.x,this.y,this.width,this.height);
 
+		var addy = Math.round( Math.max(0, this.height - 11)*0.5 );
+
 		// label 1:1
 		context.fillStyle = frontColor;
 		context.font = font;
 		context.textBaseline = "alphabetic";
 		context.textAlign = "left";
-		context.fillText(this.value1.v.toFixed(this.decimals), this.x, this.y+9);
+		context.fillText(this.value1.v.toFixed(this.decimals), this.x, this.y+9+addy);
 		// label 2:1
 		context.fillStyle = frontColor;
 		context.font = font;
 		context.textBaseline = "alphabetic";
 		context.textAlign = "right";
-		context.fillText(this.value2.v.toFixed(this.decimals), this.x+this.width-1, this.y+9);
+		context.fillText(this.value2.v.toFixed(this.decimals), this.x+this.width-1, this.y+9+addy);
 
 		context.fillStyle = frontColor;
 		var p1 = this.getPositionFromValue(this.value1.v);
@@ -335,13 +337,13 @@ var xgui = function ( p ) {
 		context.font = font;
 		context.textBaseline = "alphabetic";
 		context.textAlign = "left";
-		context.fillText(this.value1.v.toFixed(this.decimals), this.x, this.y+9);
+		context.fillText(this.value1.v.toFixed(this.decimals), this.x, this.y+9+addy);
 		// label 2:2
 		context.fillStyle = bgColor;
 		context.font = font;
 		context.textBaseline = "alphabetic";
 		context.textAlign = "right";
-		context.fillText(this.value2.v.toFixed(this.decimals), this.x+this.width-1, this.y+9);
+		context.fillText(this.value2.v.toFixed(this.decimals), this.x+this.width-1, this.y+9+addy);
 
 		context.restore();
 		
@@ -1644,9 +1646,11 @@ var xgui = function ( p ) {
 		context.fillStyle = bgColor;
 		context.fillRect(this.x,this.y,this.width,this.height);
 
+		var addx = Math.round( Math.max(0, this.width - 11)*0.5 );
+
 		// label
 		context.save();
-		context.translate(this.x+9, this.y+this.height-1);
+		context.translate(this.x+9+addx, this.y+this.height-1);
 		context.rotate(-Math.PI/2);
 		
 		context.fillStyle = frontColor;
@@ -1662,7 +1666,7 @@ var xgui = function ( p ) {
 		context.fillRect(this.x,this.y+p,this.width,this.height-p);
 
 		context.save();
-		context.translate(this.x+9, this.y+this.height-1);
+		context.translate(this.x+9+addx, this.y+this.height-1);
 		context.rotate(-Math.PI/2);
 
 		context.fillStyle = "transparent";
