@@ -1557,12 +1557,15 @@ var xgui = function ( p ) {
 		context.clearRect(this.x,this.y,this.width,this.height);
 		context.fillStyle = bgColor;
 		context.fillRect(this.x,this.y,this.width,this.height);
+
+		var addy = Math.round( Math.max(0, this.height - 11)*0.5 );
+
 		// label
 		context.fillStyle = frontColor;
 		context.font = font;
 		context.textBaseline = "alphabetic";
 		context.textAlign = "left";
-		context.fillText(this.value.v.toFixed(this.decimals), this.x, this.y+9);
+		context.fillText(this.value.v.toFixed(this.decimals), this.x, this.y+9+addy);
 
 		var p = this.getPositionFromValue();
 		context.fillStyle = frontColor;
@@ -1580,7 +1583,7 @@ var xgui = function ( p ) {
 		context.font = font;
 		context.textBaseline = "alphabetic";
 		context.textAlign = "left";
-		context.fillText(this.value.v.toFixed(this.decimals), this.x, this.y+9);
+		context.fillText(this.value.v.toFixed(this.decimals), this.x, this.y+9+addy);
 
 		context.restore();
 		
