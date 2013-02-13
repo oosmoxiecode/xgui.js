@@ -32,7 +32,7 @@
 		// bunch of test elements
 
 		// HSlider
-		var h0 = new gui.HSlider( {x:10, y:20, value: 20, min:20, max:100} );
+		var h0 = new gui.HSlider( {x:10, y:20, value: 20, min:20, max:100, height: 16} );
 		var h1 = new gui.HSlider( {x:10, y:40, value: 80} );
 
 		// Label
@@ -46,12 +46,12 @@
 
 		var radioGroup2 = new gui.RadioButtonGroup();
 		radioGroup2.add( new gui.RadioButton( {x: 280, y: 20, text: "Radio(group 2) - 1", selected: false } ) );
-		radioGroup2.add( new gui.RadioButton( {x: 280, y: 35, text: "Radio(group 2) - 2", selected: false } ) );
+		radioGroup2.add( new gui.RadioButton( {x: 280, y: 35, text: "Radio(group 2) - 2", selected: false, height: 20, width: 36 } ) );
 
 		// CheckBox
 		var c0 = new gui.CheckBox( {x: 10, y: 80, text: "Checkbox A" } );
 		var c1 = new gui.CheckBox( {x: 10, y: 95, text: "Checkbox B", selected: true } );
-		var c2 = new gui.CheckBox( {x: 10, y: 110, text: "Checkbox C" } );
+		var c2 = new gui.CheckBox( {x: 10, y: 110, text: "Checkbox C", height: 20, width: 20 } );
 
 		// Knob
 		var k0 = new gui.Knob( {x: 10, y: 140, radius: 20, value: -80, min: -200, max: 200 } );
@@ -62,24 +62,24 @@
 		var v0 = new gui.VSlider( {x: 140, y: 80, value: 50} );
 		var v1 = new gui.VSlider( {x: 160, y: 80, value: 20} );
 		var v2 = new gui.VSlider( {x: 180, y: 80, value: 80, min:20, max:100} );
-		var v3 = new gui.VSlider( {x: 200, y: 80, value: 60, min: -1150, max: 300} );
+		var v3 = new gui.VSlider( {x: 200, y: 80, value: 60, min: -1150, max: 300, width: 20} );
 
 		// ColorPicker
-		var cp0 = new gui.ColorPicker( {x: 230, y: 80 } );
+		var cp0 = new gui.ColorPicker( {x: 230, y: 80, frameheight: 15, framewidth: 30 } );
 
 		// TrackPad
-		var tp0 = new gui.TrackPad( {x: 350, y: 80, min: 10, max: 100 } );
+		var tp0 = new gui.TrackPad( {x: 350, y: 80, min: 10, max: 100, value1: 20, value2: 40 } );
 
 		// Buttom
 		var b0 = new gui.Button( {x: 420, y: 20, text: "Test Button" } );
-		var b1 = new gui.Button( {x: 420, y: 40, text: "Another Button" } );
+		var b1 = new gui.Button( {x: 420, y: 40, text: "Another Button", height: 30 } );
 
 		// HSlider
 		var h2 = new gui.HSlider( {x:10, y:200, value: 240, min: 0, max: 255} );
 		var h3 = new gui.HSlider( {x:10, y:220, value: 250, min: -1000, max: 1000} );
 
 		// ColorPicker2
-		var cp1 = new gui.ColorPicker2( {x: 140, y: 200 } );
+		var cp1 = new gui.ColorPicker2( {x: 140, y: 200, frameheight: 15, framewidth: 30 } );
 		var cp2 = new gui.ColorPicker2( {x: 140, y: 220 } );
 
 		// Graph
@@ -88,7 +88,7 @@
 		// Stepper
 		var s0 = new gui.Stepper( {x: 230, y: 200, value: 5500 } );
 		var s1 = new gui.Stepper( {x: 230, y: 212, value: -2560 } );
-		var s2 = new gui.Stepper( {x: 230, y: 224, value: 390 } );
+		var s2 = new gui.Stepper( {x: 230, y: 224, value: 390, height: 20, width: 80 } );
 
 		// ImageButton
 		var l1 = new gui.Label( {x: 310, y: 200, text: "ImageButton's" } );
@@ -121,11 +121,11 @@
 
 		// Matrix
 		var m0 = new gui.Matrix( {x: 470, y: 166} );
-		var m1 = new gui.Matrix( {x: 530, y: 166, w: 3, h: 3, array: [ [1,0,0],[0,1,0],[0,0,1] ]} );
+		var m1 = new gui.Matrix( {x: 530, y: 166, w: 3, h: 3, size: 14, array: [ [1,0,0],[0,1,0],[0,0,1] ]} );
 
 		// RangeSlider
 		var rs0 = new gui.RangeSlider( {x:400, y:224, min:20} );
-		var rs1 = new gui.RangeSlider( {x:520, y:224, value1:-20, value2:20, min:-400, max:100, decimals: 0} );
+		var rs1 = new gui.RangeSlider( {x:520, y:224, value1:-20, value2:20, min:-400, max:100, decimals: 0, height: 26} );
 
 
 		// Set up some stuff to test with
