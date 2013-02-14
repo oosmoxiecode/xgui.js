@@ -24,8 +24,8 @@
 		// xgui test
 		var gui = new xgui( {width: 640, height: 320} );
 		// you can change colors like this:
-		//var gui = new xgui( {width: 640, height: 260, backgroundColor: "rgb(65, 104, 137)", frontColor: "rgb(153, 193, 226)", dimColor: "rgb(90, 137, 177)"} );
-		//var gui = new xgui( {width: 640, height: 260, backgroundColor: "#000000", frontColor: "#ffffff", dimColor: "#333333"} );
+		//var gui = new xgui( {width: 640, height: 320, backgroundColor: "rgb(65, 104, 137)", frontColor: "rgb(153, 193, 226)", dimColor: "rgb(90, 137, 177)"} );
+		//var gui = new xgui( {width: 640, height: 320, backgroundColor: "#000000", frontColor: "#ffffff", dimColor: "#333333"} );
 
 		// add to dom
 		document.body.appendChild( gui.getDomElement() );
@@ -58,7 +58,6 @@
 		var v0 = new gui.VSlider( {x: 560, y: 120, value: 50, width:20, height:160} );
 		var v1 = new gui.VSlider( {x: 590, y: 120, value: 20, width:20, height:160} );
 		var v2 = new gui.VSlider( {x: 620, y: 120, value: 80, min:20, max:100, width:20, height:160} );
-		//var v3 = new gui.VSlider( {x: 200, y: 120, value: 60, min: -1150, max: 300, width:20, height:160} );
 
 		// ColorPicker
 		var cp0 = new gui.ColorPicker( {x: 125, y: 80, width: 170, height: 50, framewidth:20, frameheight:20 } );
@@ -69,10 +68,6 @@
 		// Buttom
 		var b0 = new gui.Button( {x: 460, y: 20, text: "Test Button", height: 30 } );
 		var b1 = new gui.Button( {x: 460, y: 60, text: "Another Button", height: 30 } );
-
-		// HSlider
-		//var h2 = new gui.HSlider( {x:10, y:200, value: 240, min: 0, max: 255} );
-		//var h3 = new gui.HSlider( {x:10, y:220, value: 250, min: -1000, max: 1000} );
 
 		// ColorPicker2
 		var cp1 = new gui.ColorPicker2( {x: 210, y: 180, width: 170, height: 50, framewidth:20, frameheight:20 } );
@@ -86,27 +81,6 @@
 		var s1 = new gui.Stepper( {x: 340, y: 222, value: -2560, width:80, height:20 } );
 		var s2 = new gui.Stepper( {x: 340, y: 244, value: 390, width:80, height:20 } );
 
-		// ImageButton
-		/*var l1 = new gui.Label( {x: 310, y: 200, text: "ImageButton's" } );
-
-		var image0 = new Image();
-		image0.onload = function () {
-			var i0 = new gui.ImageButton( {x: 310, y: 218, image: this } );
-		};
-		image0.src = "assets/flag_sv.jpg";
-
-		var image1 = new Image();
-		image1.onload = function () {
-			var i1 = new gui.ImageButton( {x: 330, y: 218, image: this } );
-		};
-		image1.src = "assets/flag_en.jpg";
-		
-		var image2 = new Image();
-		image2.onload = function () {
-			var i2 = new gui.ImageButton( {x: 350, y: 218, image: this } );
-		};
-		image2.src = "assets/flag_fr.jpg";
-		*/
 		// InputText
 		var it0 = new gui.InputText( {x: 560, y: 20, text: "Input field 1" } );
 		var it1 = new gui.InputText( {x: 560, y: 43, text: "Input field 2" } );
@@ -172,7 +146,7 @@
 	
 	</script>
 
-	Testbed for <a href="https://github.com/oosmoxiecode/xgui.js">xgui.js</a>.
+	Testbed touch for <a href="https://github.com/oosmoxiecode/xgui.js">xgui.js</a>.
 
 </body>
 </HTML>
