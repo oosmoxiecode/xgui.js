@@ -768,8 +768,8 @@ var xgui = function ( p ) {
 
 		this.name = "ImageButton";
 		this.image = p.image || new Image();
-		this.width = this.image.width;
-		this.height = this.image.height;
+		this.width = p.width || this.image.width;
+		this.height = p.height || this.image.height;
 		this.mouseIsDown = false;
 		this.value = new Value(this.mouseIsDown);
 		this.draw();
@@ -787,7 +787,7 @@ var xgui = function ( p ) {
 			context.globalAlpha = 1.0;
 		}
 		// image
-		context.drawImage(this.image, this.x, this.y);
+		context.drawImage(this.image, this.x, this.y, this.width, this.height);
 		context.globalAlpha = 1.0;
 	}
 
