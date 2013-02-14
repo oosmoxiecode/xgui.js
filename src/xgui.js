@@ -1676,7 +1676,7 @@ var xgui = function ( p ) {
 		this.name = "VSlider";
 		this.mouseIsOver = false;
 		this.value = new Value(p.value || 0);
-		this.width = p.width || 10,
+		this.width = p.width || 10;
 		this.height = p.height || 100;
 		this.min = p.min || 0;
 		this.max = p.max || this.height;
@@ -1758,6 +1758,134 @@ var xgui = function ( p ) {
 		this.value.updateBind(true);
 	}
 
+	/*
+	 * Joystick
+	 */
+
+	this.Joystick = function ( p ) {
+		Base.call( this, p );
+
+		this.name = "Joystick";
+		this.value1 = new Value(0);
+		this.value2 = new Value(0);
+		this.radius = p.radius || 50;
+		this.innerRadius = p.innerRadius || this.radius*0.65;
+		this.centerx = this.x+this.radius;
+		this.centery = this.y+this.radius;
+		this.width = this.radius*2;
+		this.height = this.radius*2;
+		this.stickx = 0;
+		this.sticky = 0;
+		this.laststickx = -1;
+		this.laststicky = -1;		
+		this.maxDistance = this.radius - this.innerRadius - 5;
+		this.mouseIsDown = false;
+		this.draw();
+	}
+
+	this.Joystick.prototype = new Base(); 
+	this.Joystick.prototype.constructor = this.Joystick;
+
+	this.Joystick.prototype.draw = function( updateCalling ) {
+
+		// normalize
+		if (!this.mouseIsDown) {
+			this.stickx += (0 - this.stickx)/3;
+			this.sticky += (0 - this.sticky)/3;			
+		}
+
+		if (this.stickx.toFixed(2) == this.laststickx.toFixed(2) && this.sticky.toFixed(2) == this.laststicky.toFixed(2) && updateCalling) {
+			return;
+		}
+		
+		this.value1.v = this.stickx/this.maxDistance;
+		this.value2.v = this.sticky/this.maxDistance;
+
+		context.clearRect(this.x-2,this.y-2,this.width+14,this.height+14);
+
+		// ToDo: Move this gradient creation to the construct and use translate instead...
+
+		//draw outer circle
+		var gradient = context.createRadialGradient(this.centerx, this.centery, this.radius+5, this.centerx-7, this.centery-7, 5);
+		gradient.addColorStop(0, dimColor);
+		gradient.addColorStop(0.2, frontColor);
+		gradient.addColorStop(1, dimColor);		
+		context.fillStyle = gradient;
+		context.beginPath();
+		context.arc(this.centerx, this.centery, this.radius, 0, Math.PI*2, false); 
+		context.closePath();
+		context.fill();
+
+
+		//draw inner circle
+
+		// shadow
+		var shadowaddx = (1-this.value1.v)*5;
+		var shadowaddy = (1-this.value2.v)*5;
+		
+		var gradient = context.createRadialGradient(this.centerx+this.stickx+shadowaddx, this.centery+this.sticky+shadowaddy, this.innerRadius+10, this.centerx+this.stickx+shadowaddx, this.centery+this.sticky+shadowaddy, 1);
+		gradient.addColorStop(0, 'rgba(0,0,0,0)');
+		gradient.addColorStop(1, 'rgba(0,0,0,1)');
+		context.fillStyle = gradient;
+		context.beginPath();
+		context.arc(this.centerx+this.stickx+shadowaddx, this.centery+this.sticky+shadowaddy, this.innerRadius+10, 0, Math.PI*2, false); 
+		context.closePath();
+		context.fill();
+
+		// gradient + first circle
+		var gradient = context.createLinearGradient(this.centerx+this.stickx-this.innerRadius, this.centery+this.sticky-this.innerRadius, this.centerx+this.stickx-this.innerRadius, this.centery+this.sticky+this.innerRadius);
+		gradient.addColorStop(0, frontColor);
+		gradient.addColorStop(1, dimColor);
+		context.fillStyle = gradient;
+		context.beginPath();
+		context.arc(this.centerx+this.stickx, this.centery+this.sticky, this.innerRadius, 0, Math.PI*2, false); 
+		context.closePath();
+		context.fill();
+
+		// gradient + second circle
+		var gradient = context.createRadialGradient(this.centerx+this.stickx, this.centery+this.sticky, this.radius, this.centerx+this.stickx, this.centery+this.sticky, 1);
+		gradient.addColorStop(0, dimColor);
+		gradient.addColorStop(1, frontColor);
+		context.fillStyle = gradient;
+		context.beginPath();
+		context.arc(this.centerx+this.stickx, this.centery+this.sticky, this.innerRadius-6, 0, Math.PI*2, false); 
+		context.closePath();
+		context.fill();
+
+
+		this.laststickx = this.stickx;
+		this.laststicky = this.sticky;		
+
+	}
+
+	this.Joystick.prototype.mouseDown = function(x,y) {
+
+		this.mouseIsDown = true;
+
+		this.stickx = x-this.radius;
+		this.sticky = y-this.radius;
+
+		var distance = Math.sqrt(this.stickx * this.stickx + this.sticky * this.sticky);
+		
+		if (distance > this.maxDistance) {
+			var angleRad = Math.atan2(this.stickx, this.sticky);
+			this.stickx = Math.sin(angleRad) * this.maxDistance;
+			this.sticky = Math.cos(angleRad) * this.maxDistance;
+		}
+
+		this.draw();
+
+		this.value1.updateBind();
+		this.value2.updateBind();
+		
+	}
+
+	this.Joystick.prototype.mouseUp = function() {
+		this.mouseIsDown = false;
+		this.value1.updateBind(true);
+		this.value2.updateBind(true);		
+	}	
+
 
 	/*
 	 * Label
@@ -1805,6 +1933,13 @@ var xgui = function ( p ) {
 
 		for (var i=0; i<pool.length; ++i ) {
 			var o = pool[i];
+
+			// special joystick case
+			if (o.name == "Joystick") {
+				o.draw( true );
+				continue;
+			}
+
 			// 1 value
 			if (o.value) {
 				if ((o.value.receiver || o.value.both) && time > (o.lastUpdate+o.updateInterval)) {
@@ -1856,6 +1991,7 @@ var xgui = function ( p ) {
 		DropDown: this.DropDown,
 		Matrix: this.Matrix,
 		RangeSlider: this.RangeSlider,
+		Joystick: this.Joystick,
 		update: this.update
 
 	};
