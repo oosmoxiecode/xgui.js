@@ -37,10 +37,35 @@ var xgui = function ( p ) {
 
 	container.appendChild(canvas);
 
+	var isTouchDevice = ('ontouchstart' in canvas) || (navigator.userAgent.match(/ipad|iphone|android/i) != null);
 
-	document.addEventListener( 'mousemove', onMouseMove, false );
-	container.addEventListener( 'mousedown', onMouseDown, false );
-	document.addEventListener( 'mouseup', onMouseUp, false );
+	if (isTouchDevice) {
+		
+		// touch events
+		document.addEventListener( 'touchmove', function ( event ) {
+			onMouseMove(event, true);
+		}, false );
+		container.addEventListener( 'touchstart', function ( event ) {
+			onMouseDown(event, true);
+		}, false );
+		document.addEventListener( 'touchend', function ( event ) {
+			onMouseUp(event, true);
+		}, false );
+
+	} else {
+		
+		// mouse events
+		document.addEventListener( 'mousemove', function ( event ) {
+			onMouseMove(event);
+		}, false );
+		container.addEventListener( 'mousedown', function ( event ) {
+			onMouseDown(event);
+		}, false );
+		document.addEventListener( 'mouseup', function ( event ) {
+			onMouseUp(event);
+		}, false );
+
+	}
 
 	/*document.addEventListener( 'touchmove', function ( event ) {
 		onMouseMove(event.touches[0]);
@@ -52,22 +77,25 @@ var xgui = function ( p ) {
 		onMouseUp(event.touches[0]);
 	}, false );*/
 
-	function onMouseMove ( event ) {
+	function onMouseMove ( event, isTouchEvent ) {
 		
 		event.preventDefault();
+
+		var mouse = event;
+		if (isTouchEvent) mouse = event.touches[0];
 
 		if (!mouseDown) {
 			if (mouseHitId != null) {
 				var o = pool[mouseHitId];
 				if (o.name == "ColorPicker2") {
-					var m = canvas.relMouseCoords(event);
+					var m = canvas.relMouseCoords(mouse);
 					o.mouseMove(m.x-o.x,m.y-o.y);
 				}
 			}
 			return;
 		}
 
-		var m = canvas.relMouseCoords(event);
+		var m = canvas.relMouseCoords(mouse);
 		var o = pool[mouseHitId];
 
 		if (o.name == "CheckBox" || o.name == "RadioButton" || o.name == "Button" || o.name == "ImageButton" || o.name == "Matrix") return;
@@ -79,7 +107,10 @@ var xgui = function ( p ) {
 
 	}
 
-	function onMouseDown ( event ) {
+	function onMouseDown ( event, isTouchEvent ) {
+
+		var mouse = event;
+		if (isTouchEvent) mouse = event.touches[0];
 
 		// fix for textfields
 		if (event.target == container || event.target == canvas) {
@@ -92,7 +123,7 @@ var xgui = function ( p ) {
 			}
 		}
 		
-		var m = canvas.relMouseCoords(event);
+		var m = canvas.relMouseCoords(mouse);
 
 		for (var i=0; i<pool.length; ++i ) {
 			var o = pool[i];
@@ -115,7 +146,7 @@ var xgui = function ( p ) {
 				
 	}
 
-	function onMouseUp ( event ) {
+	function onMouseUp ( event, isTouchEvent ) {
 		
 		mouseDown = false;
 		if (mouseHitId != null) {
