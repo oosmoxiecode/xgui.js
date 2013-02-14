@@ -1118,6 +1118,9 @@ var xgui = function ( p ) {
 		if (this.open) {
 			if (x > 0 && x < this.colorwidth-1) {
 				if (y > this.frameheight && y < this.frameheight+this.colorheight) {
+					if (isTouchDevice) {
+						this.mouseMove(x,y);
+					}
 					this.oldColor = { r:this.r, g:this.g, b:this.b };
 				}
 			}
