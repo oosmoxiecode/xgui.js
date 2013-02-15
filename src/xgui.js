@@ -1830,7 +1830,6 @@ var xgui = function ( p ) {
 		context.closePath();
 		context.fill();
 
-
 		//draw inner circle
 
 		// shadow
@@ -1838,7 +1837,7 @@ var xgui = function ( p ) {
 		var shadowaddy = (1-this.value2.v)*5;
 		
 		var gradient = context.createRadialGradient(this.centerx+this.stickx+shadowaddx, this.centery+this.sticky+shadowaddy, this.innerRadius+10, this.centerx+this.stickx+shadowaddx, this.centery+this.sticky+shadowaddy, 1);
-		gradient.addColorStop(0, 'rgba(0,0,0,0)');
+		gradient.addColorStop(0, 'rgba(0,0,0,0.00001)');
 		gradient.addColorStop(1, 'rgba(0,0,0,1)');
 		context.fillStyle = gradient;
 		context.beginPath();

@@ -22,10 +22,10 @@
 	<script>
 
 		// xgui test
-		var gui = new xgui( {width: 640, height: 320} );
+		var gui = new xgui( {width: 640, height: 360} );
 		// you can change colors like this:
-		//var gui = new xgui( {width: 640, height: 320, backgroundColor: "rgb(65, 104, 137)", frontColor: "rgb(153, 193, 226)", dimColor: "rgb(90, 137, 177)"} );
-		//var gui = new xgui( {width: 640, height: 320, backgroundColor: "#000000", frontColor: "#ffffff", dimColor: "#333333"} );
+		//var gui = new xgui( {width: 640, height: 360, backgroundColor: "rgb(65, 104, 137)", frontColor: "rgb(153, 193, 226)", dimColor: "rgb(90, 137, 177)"} );
+		//var gui = new xgui( {width: 640, height: 360, backgroundColor: "#000000", frontColor: "#ffffff", dimColor: "#333333"} );
 
 		// add to dom
 		document.body.appendChild( gui.getDomElement() );
@@ -63,7 +63,7 @@
 		var cp0 = new gui.ColorPicker( {x: 125, y: 80, width: 170, height: 50, framewidth:20, frameheight:20 } );
 
 		// TrackPad
-		var tp0 = new gui.TrackPad( {x: 315, y: 20, min: 10, max: 100, value1: 20, value2: 40, width: 130, height: 100 } );
+		var tp0 = new gui.TrackPad( {x: 315, y: 20, min: 10, max: 100, value1: 20, value2: 40, size: 16, width: 130, height: 100 } );
 
 		// Buttom
 		var b0 = new gui.Button( {x: 460, y: 20, text: "Test Button", height: 30 } );
@@ -77,9 +77,8 @@
 		var g0 = new gui.Graph( {x: 315, y: 140, max: 100, min: -100, width: 130 } );
 
 		// Stepper
-		var s0 = new gui.Stepper( {x: 340, y: 200, value: 5500, width:80, height:20 } );
-		var s1 = new gui.Stepper( {x: 340, y: 222, value: -2560, width:80, height:20 } );
-		var s2 = new gui.Stepper( {x: 340, y: 244, value: 390, width:80, height:20 } );
+		var s0 = new gui.Stepper( {x: 340, y: 190, value: 5500, width:80, height:20 } );
+		var s1 = new gui.Stepper( {x: 340, y: 212, value: -2560, width:80, height:20 } );
 
 		// InputText
 		var it0 = new gui.InputText( {x: 560, y: 20, text: "Input field 1" } );
@@ -97,6 +96,9 @@
 		var rs0 = new gui.RangeSlider( {x:10, y:250, min:20, width:160, height:20} );
 		var rs1 = new gui.RangeSlider( {x:10, y:280, value1:-20, value2:20, min:-400, max:100, decimals: 0, width:160, height:20} );
 
+		// Joystick // this one needs 'update' to fallback to center on release
+		var joy0 = new gui.Joystick( {x:185, y:250} );		
+		var joy1 = new gui.Joystick( {x:345, y:250} );		
 
 		// Set up some stuff to test with
 		var testObj0 = {x: 20, y: 80};
@@ -127,6 +129,7 @@
 		l0.value.bind(testObj1, "b");
 		l0.value.receiver = true;
 		l0.updateInterval = 40;
+
 
 		// Run a dummy update
 		setInterval(tempUpdate, 1000/60);
