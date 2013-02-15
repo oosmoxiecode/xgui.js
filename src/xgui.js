@@ -8,8 +8,8 @@ var xgui = function ( p ) {
 
 	var container, canvas, context;
 	var pool = [];
-	var mouseDown = false;
-	var mouseHitId = null;
+	var mouseDownArray = [false,false,false,false,false,false,false,false,false,false,false]; // 11 touch events, hopefully no one has more fingers than that...
+	var mouseHitIdArray = [null,null,null,null,null,null,null,null,null,null,null];
 	var mouseHitCanvas = true;
 	var bgColor = p.backgroundColor || "rgb(100, 100, 100)";
 	var frontColor = p.frontColor || "rgb(230, 230, 230)";
@@ -67,62 +67,70 @@ var xgui = function ( p ) {
 
 	}
 
-	/*document.addEventListener( 'touchmove', function ( event ) {
-		onMouseMove(event.touches[0]);
-	}, false );
-	container.addEventListener( 'touchstart', function ( event ) {
-		onMouseDown(event.touches[0]);
-	}, false );
-	document.addEventListener( 'touchend', function ( event ) {
-		onMouseUp(event.touches[0]);
-	}, false );*/
 
 	function onMouseMove ( event, isTouchEvent ) {
 		
 		event.preventDefault();
 
 		var mouse = event;
-		if (isTouchEvent) mouse = event.touches[0];
 
-		if (!mouseDown) {
-			if (mouseHitId != null) {
-				var o = pool[mouseHitId];
-				if (o.name == "ColorPicker2") {
-					var m = canvas.relMouseCoords(mouse);
-					o.mouseMove(m.x-o.x,m.y-o.y);
-				}
+		var loopNum = 1;
+		var inputid = 0;
+		if (isTouchEvent) loopNum = event.touches.length;
+
+		for (var t = 0; t < loopNum; t++) {
+
+			if (isTouchEvent) {
+				mouse = event.touches[t];
+				inputid = mouse.identifier;
 			}
-			return;
+
+			if (!mouseDownArray[inputid]) {
+				if (mouseHitIdArray[inputid] != null) {
+					var o = pool[mouseHitIdArray[inputid]];
+					if (o.name == "ColorPicker2") {
+						var m = canvas.relMouseCoords(mouse);
+						o.mouseMove(m.x-o.x,m.y-o.y);
+					}
+				}
+				return;
+			}
+
+			var m = canvas.relMouseCoords(mouse);
+			var o = pool[mouseHitIdArray[inputid]];
+
+			if (o.name == "CheckBox" || o.name == "RadioButton" || o.name == "Button" || o.name == "ImageButton" || o.name == "Matrix") return;
+			if (o.name == "Stepper" && (o.mouseDownPlus || o.mouseDownMinus)) {
+				return;
+			}
+
+			o.mouseDown(m.x-o.x,m.y-o.y);
+
 		}
-
-		var m = canvas.relMouseCoords(mouse);
-		var o = pool[mouseHitId];
-
-		if (o.name == "CheckBox" || o.name == "RadioButton" || o.name == "Button" || o.name == "ImageButton" || o.name == "Matrix") return;
-		if (o.name == "Stepper" && (o.mouseDownPlus || o.mouseDownMinus)) {
-			return;
-		}
-
-		o.mouseDown(m.x-o.x,m.y-o.y);
 
 	}
 
 	function onMouseDown ( event, isTouchEvent ) {
 
 		var mouse = event;
-		if (isTouchEvent) mouse = event.touches[0];
+
+		var inputid = 0;
+		if (isTouchEvent) inputid = event.changedTouches[0].identifier;
 
 		// fix for textfields
 		if (event.target == container || event.target == canvas) {
-			if (mouseHitId != null) {
-				if (pool[mouseHitId].name != "InputText" && pool[mouseHitId].name != "DropDown") {
+			if (mouseHitIdArray[inputid] != null) {
+				if (pool[mouseHitIdArray[inputid]].name != "InputText" && pool[mouseHitIdArray[inputid]].name != "DropDown") {
 					event.preventDefault();
 				}
 			} else {
 				event.preventDefault();
 			}
 		}
-		
+
+
+		if (isTouchEvent) mouse = event.touches[inputid];
+
 		var m = canvas.relMouseCoords(mouse);
 
 		for (var i=0; i<pool.length; ++i ) {
@@ -130,15 +138,15 @@ var xgui = function ( p ) {
 			if (m.x > o.x && m.x < o.x+o.width) {
 				if (m.y > o.y && m.y < o.y+o.height) {
 					o.mouseDown(m.x-o.x,m.y-o.y);
-					mouseDown = true;
+					mouseDownArray[inputid] = true;
 					// check old id
-					if (mouseHitId != null) {
-						var old = pool[mouseHitId];
+					if (mouseHitIdArray[inputid] != null) {
+						var old = pool[mouseHitIdArray[inputid]];
 						if (old.name == "ColorPicker2") {
 							old.mouseUp();
 						}
 					}
-					mouseHitId = o.id;
+					mouseHitIdArray[inputid] = o.id;
 					break;
 				}
 			}
@@ -148,9 +156,12 @@ var xgui = function ( p ) {
 
 	function onMouseUp ( event, isTouchEvent ) {
 		
-		mouseDown = false;
-		if (mouseHitId != null) {
-			var o = pool[mouseHitId];
+		var inputid = 0;
+		if (isTouchEvent) inputid = event.changedTouches[0].identifier;
+
+		mouseDownArray[inputid] = false;
+		if (mouseHitIdArray[inputid] != null) {
+			var o = pool[mouseHitIdArray[inputid]];
 			o.mouseUp();
 		}
 
