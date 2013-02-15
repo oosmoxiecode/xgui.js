@@ -162,7 +162,7 @@ var xgui = function ( p ) {
 		mouseDownArray[inputid] = false;
 		if (mouseHitIdArray[inputid] != null) {
 			var o = pool[mouseHitIdArray[inputid]];
-			o.mouseUp();
+			o.mouseUp( inputid );
 		}
 
 	}
@@ -534,7 +534,7 @@ var xgui = function ( p ) {
 	}
 
 	this.DropDown.prototype.onFocus = function( event ) {
-		mouseHitId = this.id;
+		//mouseHitId = this.id;
 	}
 
 	this.DropDown.prototype.draw = function() {
@@ -606,7 +606,7 @@ var xgui = function ( p ) {
 	}
 
 	this.InputText.prototype.onFocus = function( event ) {
-		mouseHitId = this.id;
+		//mouseHitId = this.id;
 	}
 
 	this.InputText.prototype.mouseDown = function(x,y) {
@@ -1211,16 +1211,16 @@ var xgui = function ( p ) {
 		this.draw();
 	}
 
-	this.ColorPicker2.prototype.mouseUp = function() {
+	this.ColorPicker2.prototype.mouseUp = function( inputid ) {
 		if (!this.open) {
-			mouseHitId = null;
+			mouseHitIdArray[inputid] = null;
 		}
 		if (this.mousehack) {
 			this.setOldColor();
 
 			this.mouseDown();
 			
-			mouseHitId = null;
+			mouseHitIdArray[inputid] = null;
 		}
 
 		this.mousehack = true;
