@@ -922,6 +922,7 @@ var xgui = function ( p ) {
 		this.height = p.height || 60;
 		this.min = p.min || -1;
 		this.max = p.max || 1;
+		this.size =  p.size || 6;
 		this.range = this.max - this.min;
 		var center = ((this.range/2)-this.max)*-1;
 		this.value1 = new Value(p.value1 || center);
@@ -967,14 +968,16 @@ var xgui = function ( p ) {
 		var x = this.getXPositionFromValue();
 		var y = this.getYPositionFromValue();
 
-		if (x < 3) x = 3;
-		if (x > this.width-3) x = this.width-3;
-		if (y < 3) y = 3;
-		if (y > this.height-3) y = this.height-3;
+		var half = this.size/2;
+
+		if (x < half) x = half;
+		if (x > this.width-half) x = this.width-half;
+		if (y < half) y = half;
+		if (y > this.height-half) y = this.height-half;
 
 		// point
 		context.fillStyle = dimColor;
-		context.fillRect(this.x+x-3, this.y+y-3, 7, 7);
+		context.fillRect(this.x+x-half, this.y+y-half, this.size, this.size);
 
 		// label
 		context.fillStyle = bgColor;
