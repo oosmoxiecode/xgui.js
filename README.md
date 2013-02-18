@@ -60,5 +60,8 @@ Matrix,
 RangeSlider,
 Joystick.**
 
-**Updates**
-2013-02-15 - Made it touch friendly, so multitouch should hopefully work(Tested on Nexus 4/7). Added Joystick, like an analog stick. Fixed various bugs and stuff.
+**History**
+
+r1 - Made it touch friendly, so multitouch should hopefully work(Tested on Nexus 4/7). Added Joystick, like an analog stick. Fixed various bugs and stuff.
+
+r0 - Initial version.
