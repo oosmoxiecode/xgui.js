@@ -1,0 +1,10 @@
+{
+  "name": "xgui",
+  "description": "reactive canvas gui elements",
+  "version": "0.0.1",
+  "keywords": ["gui","ui","canvas"],
+  "author": "oosmoxiecode",
+  "www": "http://oos.moxiecode.com/",
+  "license": "MIT",
+  "scripts": ["index.js","src/xgui.js"]
+}

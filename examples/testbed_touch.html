@@ -11,14 +11,14 @@
 			background:#cdcdcd;
 		}
 	</style>
-		
-	<script type="application/javascript" src="../src/xgui.js"></script>
-	<!-- <script type="application/javascript" src="../build/xgui.min.js"></script> -->
+
+	<script type="application/javascript" src="../dist/xgui.js"></script>
+	<!-- <script type="application/javascript" src="../dist/xgui.min.js"></script> -->
 
  </HEAD>
 
 <body>
-	
+
 	<script>
 
 		// xgui test
@@ -29,7 +29,7 @@
 
 		// add to dom
 		document.body.appendChild( gui.getDomElement() );
-		
+
 		// bunch of test elements
 
 		// HSlider
@@ -97,8 +97,8 @@
 		var rs1 = new gui.RangeSlider( {x:10, y:280, value1:-20, value2:20, min:-400, max:100, decimals: 0, width:160, height:20} );
 
 		// Joystick // this one needs 'update' to fallback to center on release
-		var joy0 = new gui.Joystick( {x:185, y:250} );		
-		var joy1 = new gui.Joystick( {x:345, y:250} );		
+		var joy0 = new gui.Joystick( {x:185, y:250} );
+		var joy1 = new gui.Joystick( {x:345, y:250} );
 
 		// Set up some stuff to test with
 		var testObj0 = {x: 20, y: 80};
@@ -125,7 +125,7 @@
 		g0.value.bind(testObj1, "a");
 		g0.value.receiver = true; // receiver = true, means the value is updated from the bound object/property and not the other way around.
 		g0.updateInterval = 100; // How many ms between updates, 1000 is One second for example.
-		
+
 		l0.value.bind(testObj1, "b");
 		l0.value.receiver = true;
 		l0.updateInterval = 40;
@@ -146,7 +146,7 @@
 			//console.log(testObj0.x, testObj0.y);
 
 		}
-	
+
 	</script>
 
 	Testbed touch for <a href="https://github.com/oosmoxiecode/xgui.js">xgui.js</a>.

@@ -1,3 +1,216 @@
+;(function(){
+
+
+/**
+ * hasOwnProperty.
+ */
+
+var has = Object.prototype.hasOwnProperty;
+
+/**
+ * Require the given path.
+ *
+ * @param {String} path
+ * @return {Object} exports
+ * @api public
+ */
+
+function require(path, parent, orig) {
+  var resolved = require.resolve(path);
+
+  // lookup failed
+  if (null == resolved) {
+    orig = orig || path;
+    parent = parent || 'root';
+    var err = new Error('Failed to require "' + orig + '" from "' + parent + '"');
+    err.path = orig;
+    err.parent = parent;
+    err.require = true;
+    throw err;
+  }
+
+  var module = require.modules[resolved];
+
+  // perform real require()
+  // by invoking the module's
+  // registered function
+  if (!module.exports) {
+    module.exports = {};
+    module.client = module.component = true;
+    module.call(this, module.exports, require.relative(resolved), module);
+  }
+
+  return module.exports;
+}
+
+/**
+ * Registered modules.
+ */
+
+require.modules = {};
+
+/**
+ * Registered aliases.
+ */
+
+require.aliases = {};
+
+/**
+ * Resolve `path`.
+ *
+ * Lookup:
+ *
+ *   - PATH/index.js
+ *   - PATH.js
+ *   - PATH
+ *
+ * @param {String} path
+ * @return {String} path or null
+ * @api private
+ */
+
+require.resolve = function(path) {
+  if (path.charAt(0) === '/') path = path.slice(1);
+  var index = path + '/index.js';
+
+  var paths = [
+    path,
+    path + '.js',
+    path + '.json',
+    path + '/index.js',
+    path + '/index.json'
+  ];
+
+  for (var i = 0; i < paths.length; i++) {
+    var path = paths[i];
+    if (has.call(require.modules, path)) return path;
+  }
+
+  if (has.call(require.aliases, index)) {
+    return require.aliases[index];
+  }
+};
+
+/**
+ * Normalize `path` relative to the current path.
+ *
+ * @param {String} curr
+ * @param {String} path
+ * @return {String}
+ * @api private
+ */
+
+require.normalize = function(curr, path) {
+  var segs = [];
+
+  if ('.' != path.charAt(0)) return path;
+
+  curr = curr.split('/');
+  path = path.split('/');
+
+  for (var i = 0; i < path.length; ++i) {
+    if ('..' == path[i]) {
+      curr.pop();
+    } else if ('.' != path[i] && '' != path[i]) {
+      segs.push(path[i]);
+    }
+  }
+
+  return curr.concat(segs).join('/');
+};
+
+/**
+ * Register module at `path` with callback `definition`.
+ *
+ * @param {String} path
+ * @param {Function} definition
+ * @api private
+ */
+
+require.register = function(path, definition) {
+  require.modules[path] = definition;
+};
+
+/**
+ * Alias a module definition.
+ *
+ * @param {String} from
+ * @param {String} to
+ * @api private
+ */
+
+require.alias = function(from, to) {
+  if (!has.call(require.modules, from)) {
+    throw new Error('Failed to alias "' + from + '", it does not exist');
+  }
+  require.aliases[to] = from;
+};
+
+/**
+ * Return a require function relative to the `parent` path.
+ *
+ * @param {String} parent
+ * @return {Function}
+ * @api private
+ */
+
+require.relative = function(parent) {
+  var p = require.normalize(parent, '..');
+
+  /**
+   * lastIndexOf helper.
+   */
+
+  function lastIndexOf(arr, obj) {
+    var i = arr.length;
+    while (i--) {
+      if (arr[i] === obj) return i;
+    }
+    return -1;
+  }
+
+  /**
+   * The relative require() itself.
+   */
+
+  function localRequire(path) {
+    var resolved = localRequire.resolve(path);
+    return require(resolved, parent, path);
+  }
+
+  /**
+   * Resolve relative to the parent.
+   */
+
+  localRequire.resolve = function(path) {
+    var c = path.charAt(0);
+    if ('/' == c) return path.slice(1);
+    if ('.' == c) return require.normalize(p, path);
+
+    // resolve deps by returning
+    // the dep in the nearest "deps"
+    // directory
+    var segs = parent.split('/');
+    var i = lastIndexOf(segs, 'deps') + 1;
+    if (!i) i = 0;
+    path = segs.slice(0, i + 1).join('/') + '/deps/' + path;
+    return path;
+  };
+
+  /**
+   * Check if module is defined at `path`.
+   */
+
+  localRequire.exists = function(path) {
+    return has.call(require.modules, localRequire.resolve(path));
+  };
+
+  return localRequire;
+};
+require.register("xgui/index.js", function(exports, require, module){
+module.exports = require('./src/xgui')
+});
+require.register("xgui/src/xgui.js", function(exports, require, module){
 /**
  * @author oosmoxiecode - http://oos.moxiecode.com/
  */
@@ -40,7 +253,7 @@ var xgui = function ( p ) {
 	var isTouchDevice = ('ontouchstart' in canvas) || (navigator.userAgent.match(/ipad|iphone|android/i) != null);
 
 	if (isTouchDevice) {
-		
+
 		// touch events
 		document.addEventListener( 'touchmove', function ( event ) {
 			onMouseMove(event, true);
@@ -53,7 +266,7 @@ var xgui = function ( p ) {
 		}, false );
 
 	} else {
-		
+
 		// mouse events
 		document.addEventListener( 'mousemove', function ( event ) {
 			onMouseMove(event);
@@ -69,7 +282,7 @@ var xgui = function ( p ) {
 
 
 	function onMouseMove ( event, isTouchEvent ) {
-		
+
 		event.preventDefault();
 
 		var mouse = event;
@@ -151,11 +364,11 @@ var xgui = function ( p ) {
 				}
 			}
 		}
-				
+
 	}
 
 	function onMouseUp ( event, isTouchEvent ) {
-		
+
 		var inputid = 0;
 		if (isTouchEvent) inputid = event.changedTouches[0].identifier;
 
@@ -201,7 +414,7 @@ var xgui = function ( p ) {
 
 		if (typeof bind == "function") {
 			this.bindArray.push(bind);
-		} else if (typeof bind == "object") {	
+		} else if (typeof bind == "object") {
 			var objArray = [bind];
 			for (var i=1; i<arguments.length; ++i ) {
 				objArray.push(arguments[i]);
@@ -220,7 +433,7 @@ var xgui = function ( p ) {
 			var bind = this.bindArray[i];
 			if (typeof bind == "function") {
 				bind(this.v, mouseup);
-			} else if (typeof bind == "object") {	
+			} else if (typeof bind == "object") {
 				var obj = bind[0]
 				for (var j=1; j<bind.length; ++j ) {
 					// receiver
@@ -231,7 +444,7 @@ var xgui = function ( p ) {
 						obj[bind[j]] = this.v;
 					} else {
 						// normal
-						obj[bind[j]] = this.v;							
+						obj[bind[j]] = this.v;
 					}
 				}
 			} else {
@@ -266,13 +479,13 @@ var xgui = function ( p ) {
 	}
 
 
-	this.Matrix.prototype = new Base(); 
+	this.Matrix.prototype = new Base();
 	this.Matrix.prototype.constructor = this.Matrix;
 
 
 	this.Matrix.prototype.draw = function() {
 		context.clearRect(this.x,this.y,this.width,this.height);
-		
+
 		for (var y=0; y<this.h; ++y ) {
 			for (var x=0; x<this.w; ++x ) {
 				context.fillStyle = bgColor;
@@ -283,15 +496,15 @@ var xgui = function ( p ) {
 					context.fillRect(this.x+(x*this.size)+x+2,this.y+(y*this.size)+y+2,this.size-4,this.size-4);
 				}
 			}
-		}		
-	
+		}
+
 
 	}
 
 	this.Matrix.prototype.mouseDown = function(x,y) {
 		var gridx = Math.floor(x/(this.size+1));
 		var gridy = Math.floor(y/(this.size+1));
-		
+
 		var val = this.value.v[gridy][gridx];
 		if (!val) {
 			this.value.v[gridy][gridx] = 1;
@@ -329,7 +542,7 @@ var xgui = function ( p ) {
 		this.draw();
 	}
 
-	this.RangeSlider.prototype = new Base(); 
+	this.RangeSlider.prototype = new Base();
 	this.RangeSlider.prototype.constructor = this.RangeSlider;
 
 	this.RangeSlider.prototype.draw = function() {
@@ -388,7 +601,7 @@ var xgui = function ( p ) {
 		context.fillText(this.value2.v.toFixed(this.decimals), this.x+this.width-1, this.y+9+addy);
 
 		context.restore();
-		
+
 	}
 
 	this.RangeSlider.prototype.setValueFromPosition = function(x, val) {
@@ -415,7 +628,7 @@ var xgui = function ( p ) {
 		// closest
 		var p1 = this.getPositionFromValue(this.value1.v);
 		var p2 = this.getPositionFromValue(this.value2.v);
-		
+
 		var difx0 = Math.abs(x-p1);
 		var difx1 = Math.abs(x-p2);
 		if (difx0 < difx1) {
@@ -430,7 +643,7 @@ var xgui = function ( p ) {
 
 	this.RangeSlider.prototype.mouseUp = function() {
 		this.value1.updateBind(true);
-		this.value2.updateBind(true);		
+		this.value2.updateBind(true);
 	}
 
 	/**
@@ -524,7 +737,7 @@ var xgui = function ( p ) {
 		this.draw();
 	}
 
-	this.DropDown.prototype = new Base(); 
+	this.DropDown.prototype = new Base();
 	this.DropDown.prototype.constructor = this.DropDown;
 
 	this.DropDown.prototype.onChange = function( event ) {
@@ -538,7 +751,7 @@ var xgui = function ( p ) {
 	}
 
 	this.DropDown.prototype.draw = function() {
-		
+
 	}
 
 	this.DropDown.prototype.mouseDown = function(x,y) {
@@ -592,11 +805,11 @@ var xgui = function ( p ) {
 		this.draw();
 	}
 
-	this.InputText.prototype = new Base(); 
+	this.InputText.prototype = new Base();
 	this.InputText.prototype.constructor = this.InputText;
 
 	this.InputText.prototype.draw = function() {
-		
+
 	}
 
 	this.InputText.prototype.onTextChange = function( event ) {
@@ -610,7 +823,7 @@ var xgui = function ( p ) {
 	}
 
 	this.InputText.prototype.mouseDown = function(x,y) {
-		
+
 	}
 
 	this.InputText.prototype.mouseUp = function() {
@@ -642,7 +855,7 @@ var xgui = function ( p ) {
 		this.draw();
 	}
 
-	this.Stepper.prototype = new Base(); 
+	this.Stepper.prototype = new Base();
 	this.Stepper.prototype.constructor = this.Stepper;
 
 	this.Stepper.prototype.draw = function() {
@@ -652,7 +865,7 @@ var xgui = function ( p ) {
 		context.clearRect(this.x,this.y,this.width,this.height);
 		context.fillStyle = bgColor;
 		context.fillRect(this.x,this.y,this.width,this.height);
-		
+
 		var addy = Math.round( Math.max(0, this.height - 11)*0.5 );
 
 		// -
@@ -678,7 +891,7 @@ var xgui = function ( p ) {
 		context.textBaseline = "alphabetic";
 		context.textAlign = "center";
 		context.fillText(this.value.v.toFixed(this.decimals), this.x+this.bx/2, this.y+9+addy);
-		
+
 	}
 
 
@@ -710,7 +923,7 @@ var xgui = function ( p ) {
 
 		this.lastMouseX = x;
 		this.lastMouseY = y;
-		
+
 		this.draw();
 		this.value.updateBind();
 
@@ -746,7 +959,7 @@ var xgui = function ( p ) {
 		this.draw();
 	}
 
-	this.Graph.prototype = new Base(); 
+	this.Graph.prototype = new Base();
 	this.Graph.prototype.constructor = this.Graph;
 
 	this.Graph.prototype.draw = function() {
@@ -755,14 +968,14 @@ var xgui = function ( p ) {
 
 		// get old
 		var old = context.getImageData(this.x, this.y, this.width, this.height);
-		
+
 		context.clearRect(this.x,this.y,this.width,this.height);
 
 		// frame
 		context.strokeStyle = bgColor;
 		context.lineWidth = 2.0;
 		context.strokeRect(this.x, this.y, this.width, this.height);
-		
+
 		context.fillStyle = frontColor;
 		context.fillRect(this.x, this.y, this.width, this.height);
 
@@ -781,8 +994,8 @@ var xgui = function ( p ) {
 		var tempContext = tempCanvas.getContext('2d');
 
 		tempContext.putImageData(old, 0, 0);
-		
-		context.drawImage(tempCanvas, this.x-1, this.y); 
+
+		context.drawImage(tempCanvas, this.x-1, this.y);
 
 		// draw new
 		context.fillStyle = dimColor;
@@ -817,7 +1030,7 @@ var xgui = function ( p ) {
 		this.draw();
 	}
 
-	this.ImageButton.prototype = new Base(); 
+	this.ImageButton.prototype = new Base();
 	this.ImageButton.prototype.constructor = this.ImageButton;
 
 	this.ImageButton.prototype.draw = function() {
@@ -866,7 +1079,7 @@ var xgui = function ( p ) {
 		this.draw();
 	}
 
-	this.Button.prototype = new Base(); 
+	this.Button.prototype = new Base();
 	this.Button.prototype.constructor = this.Button;
 
 	this.Button.prototype.draw = function() {
@@ -876,7 +1089,7 @@ var xgui = function ( p ) {
 		context.strokeStyle = bgColor;
 		context.lineWidth = 2.0;
 		context.strokeRect(this.x, this.y, this.width, this.height);
-		
+
 		context.fillStyle = frontColor;
 		if (this.mouseIsDown) context.fillStyle = dimColor;
 		context.fillRect(this.x, this.y, this.width, this.height);
@@ -930,13 +1143,13 @@ var xgui = function ( p ) {
 		this.draw();
 	}
 
-	this.TrackPad.prototype = new Base(); 
+	this.TrackPad.prototype = new Base();
 	this.TrackPad.prototype.constructor = this.TrackPad;
 
 	this.TrackPad.prototype.draw = function() {
-		if (this.value1.v < this.min) this.value1.v = this.min; 
-		if (this.value1.v > this.max) this.value1.v = this.max; 
-		if (this.value2.v < this.min) this.value2.v = this.min; 
+		if (this.value1.v < this.min) this.value1.v = this.min;
+		if (this.value1.v > this.max) this.value1.v = this.max;
+		if (this.value2.v < this.min) this.value2.v = this.min;
 		if (this.value2.v > this.max) this.value2.v = this.max;
 
 		context.clearRect(this.x-1,this.y,this.width,this.height+14);
@@ -945,7 +1158,7 @@ var xgui = function ( p ) {
 		context.strokeStyle = bgColor;
 		context.lineWidth = 2.0;
 		context.strokeRect(this.x, this.y, this.width, this.height);
-		
+
 		context.fillStyle = frontColor;
 		context.fillRect(this.x, this.y, this.width, this.height);
 
@@ -990,12 +1203,12 @@ var xgui = function ( p ) {
 
 	this.TrackPad.prototype.setXValueFromPosition = function(x) {
 		var value1 = ( (this.range/this.width)*x )-(this.range-this.max);
-		this.value1.v = value1;		
+		this.value1.v = value1;
 	}
 
 	this.TrackPad.prototype.setYValueFromPosition = function(y) {
 		var value2 = ( (this.range/this.height)*y )-(this.range-this.max);
-		this.value2.v = value2;		
+		this.value2.v = value2;
 	}
 
 	this.TrackPad.prototype.getXPositionFromValue = function() {
@@ -1026,7 +1239,7 @@ var xgui = function ( p ) {
 
 	this.TrackPad.prototype.mouseUp = function() {
 		this.value1.updateBind(true);
-		this.value2.updateBind(true);		
+		this.value2.updateBind(true);
 	}
 
 	/*
@@ -1055,7 +1268,7 @@ var xgui = function ( p ) {
 		this.draw();
 	}
 
-	this.ColorPicker2.prototype = new Base(); 
+	this.ColorPicker2.prototype = new Base();
 	this.ColorPicker2.prototype.constructor = this.ColorPicker2;
 
 	this.ColorPicker2.prototype.draw = function() {
@@ -1066,7 +1279,7 @@ var xgui = function ( p ) {
 		// frame
 		context.strokeStyle = bgColor;
 		context.lineWidth = 2.0;
-		context.strokeRect(this.x, this.y, this.framewidth, this.frameheight);	
+		context.strokeRect(this.x, this.y, this.framewidth, this.frameheight);
 
 		// current color
 		context.fillStyle = "#"+this.value.v;
@@ -1087,7 +1300,7 @@ var xgui = function ( p ) {
 			context.strokeStyle = bgColor;
 			context.lineWidth = 2.0;
 			context.strokeRect(this.x, this.y+this.frameheight+extray, this.colorwidth, this.colorheight);
-			
+
 			// gradient colors
 			var gradient = context.createLinearGradient(this.x, this.y+this.frameheight+extray, this.x+this.colorwidth, this.y+this.frameheight+extray);
 			var offset = 1/6;
@@ -1120,7 +1333,7 @@ var xgui = function ( p ) {
 			context.fillStyle = gradient;
 			context.fillRect(this.x, this.y+this.frameheight+extray+(this.colorheight/2), this.colorwidth, (this.colorheight/2));
 		}
-		
+
 	}
 
 	this.ColorPicker2.prototype.mouseDown = function(x,y) {
@@ -1159,7 +1372,7 @@ var xgui = function ( p ) {
 		this.mousehack = false;
 
 		this.lastTime = new Date().getTime();
-		
+
 		if (!this.open) {
 			for (var i=0; i<pool.length; ++i ) {
 				var o = pool[i];
@@ -1174,7 +1387,7 @@ var xgui = function ( p ) {
 		this.r = this.oldColor.r;
 		this.g = this.oldColor.g;
 		this.b = this.oldColor.b;
-		this.hex = colorToHex("rgb("+this.r+","+this.g+","+this.b+")");	
+		this.hex = colorToHex("rgb("+this.r+","+this.g+","+this.b+")");
 	}
 
 	this.ColorPicker2.prototype.mouseMove = function(x,y) {
@@ -1222,7 +1435,7 @@ var xgui = function ( p ) {
 			this.setOldColor();
 
 			this.mouseDown();
-			
+
 			mouseHitIdArray[inputid] = null;
 		}
 
@@ -1240,7 +1453,7 @@ var xgui = function ( p ) {
 
 		this.name = "ColorPicker";
 		this.framewidth = p.framewidth || 10;
-		this.frameheight = p.frameheight || 10;		
+		this.frameheight = p.frameheight || 10;
 		this.width = p.width || 100;
 		this.height = p.height || 20;
 		this.r = p.r || 255;
@@ -1251,7 +1464,7 @@ var xgui = function ( p ) {
 		this.draw();
 	}
 
-	this.ColorPicker.prototype = new Base(); 
+	this.ColorPicker.prototype = new Base();
 	this.ColorPicker.prototype.constructor = this.ColorPicker;
 
 	this.ColorPicker.prototype.draw = function() {
@@ -1261,7 +1474,7 @@ var xgui = function ( p ) {
 		context.strokeStyle = bgColor;
 		context.lineWidth = 2.0;
 		context.strokeRect(this.x, this.y, this.width, this.height);
-		
+
 		// gradient colors
 		var gradient = context.createLinearGradient(this.x, this.y, this.x+this.width, this.y);
 		var offset = 1/6;
@@ -1298,7 +1511,7 @@ var xgui = function ( p ) {
 		context.strokeStyle = bgColor;
 		context.lineWidth = 2.0;
 		context.strokeRect(this.x, this.y+this.height+4, this.framewidth, this.frameheight);
-		
+
 		context.fillStyle = "#"+this.value.v;
 		context.fillRect(this.x, this.y+this.height+4, this.framewidth, this.frameheight);
 
@@ -1357,7 +1570,7 @@ var xgui = function ( p ) {
 		this.draw();
 	}
 
-	this.Knob.prototype = new Base(); 
+	this.Knob.prototype = new Base();
 	this.Knob.prototype.constructor = this.Knob;
 
 	this.Knob.prototype.getRotationValue = function() {
@@ -1374,7 +1587,7 @@ var xgui = function ( p ) {
 		//draw a circle
 		context.fillStyle = bgColor;
 		context.beginPath();
-		context.arc(this.centerx, this.centery, this.radius, 0, Math.PI*2, false); 
+		context.arc(this.centerx, this.centery, this.radius, 0, Math.PI*2, false);
 		context.closePath();
 		context.fill();
 
@@ -1430,11 +1643,11 @@ var xgui = function ( p ) {
 			var avg = (difx-dify)/100;//-this.range;
 			avg *= this.range;
 			this.value.v += avg;
-			
+
 			this.draw();
 			this.value.updateBind();
 		}
-		
+
 		this.lastMouseX = x;
 		this.lastMouseY = y;
 	}
@@ -1461,7 +1674,7 @@ var xgui = function ( p ) {
 		this.draw();
 	}
 
-	this.CheckBox.prototype = new Base(); 
+	this.CheckBox.prototype = new Base();
 	this.CheckBox.prototype.constructor = this.CheckBox;
 
 	this.CheckBox.prototype.draw = function() {
@@ -1473,7 +1686,7 @@ var xgui = function ( p ) {
 		} else {
 			context.fillStyle = bgColor;
 		}
-		context.fillRect(this.x+2,this.y+2,this.fullWidth-4,this.height-4);		
+		context.fillRect(this.x+2,this.y+2,this.fullWidth-4,this.height-4);
 
 		// label
 		var addy = Math.round( Math.max(0, this.height - 11)*0.5 );
@@ -1491,9 +1704,9 @@ var xgui = function ( p ) {
 		if (!this.value.v) {
 			this.value.v = true;
 		} else {
-			this.value.v = false;		
+			this.value.v = false;
 		}
-		
+
 		this.value.updateBind();
 
 		this.draw();
@@ -1528,7 +1741,7 @@ var xgui = function ( p ) {
 				continue;
 			}
 			this.value.v[i] = false;
-			
+
 			r.value.v = false;
 			r.value.updateBind();
 			r.draw();
@@ -1538,7 +1751,7 @@ var xgui = function ( p ) {
 
 	this.RadioButton = function ( p ) {
 		Base.call( this, p );
-		
+
 		this.name = "RadioButton";
 		this.group = null;
 		this.text = p.text || "";
@@ -1549,7 +1762,7 @@ var xgui = function ( p ) {
 		this.draw();
 	}
 
-	this.RadioButton.prototype = new Base(); 
+	this.RadioButton.prototype = new Base();
 	this.RadioButton.prototype.constructor = this.RadioButton;
 
 	this.RadioButton.prototype.draw = function() {
@@ -1561,7 +1774,7 @@ var xgui = function ( p ) {
 			context.fillRect((this.x+this.fullWidth/2)+1,this.y+2,(this.fullWidth/2)-3,this.height-4);
 		} else {
 			context.fillStyle = dimColor;
-			context.fillRect(this.x+2,this.y+2,(this.fullWidth/2)-3,this.height-4);		
+			context.fillRect(this.x+2,this.y+2,(this.fullWidth/2)-3,this.height-4);
 		}
 		// label
 		var addy = Math.round( Math.max(0, this.height - 11)*0.5 );
@@ -1580,7 +1793,7 @@ var xgui = function ( p ) {
 		if (!this.value.v) {
 			this.value.v = true;
 		}
-		
+
 		this.value.updateBind();
 		this.draw();
 	}
@@ -1613,7 +1826,7 @@ var xgui = function ( p ) {
 		this.draw();
 	}
 
-	this.HSlider.prototype = new Base(); 
+	this.HSlider.prototype = new Base();
 	this.HSlider.prototype.constructor = this.HSlider;
 
 	this.HSlider.prototype.draw = function() {
@@ -1643,7 +1856,7 @@ var xgui = function ( p ) {
 		context.beginPath();
 		context.rect(this.x,this.y,p,this.height);
 		context.clip();
-		
+
 		// label2
 		context.fillStyle = bgColor;
 		context.font = font;
@@ -1652,12 +1865,12 @@ var xgui = function ( p ) {
 		context.fillText(this.value.v.toFixed(this.decimals), this.x, this.y+9+addy);
 
 		context.restore();
-		
+
 	}
 
 	this.HSlider.prototype.setValueFromPosition = function(x) {
 		var value = ( (this.range/this.width)*x )-(this.range-this.max);
-		this.value.v = value;		
+		this.value.v = value;
 	}
 
 	this.HSlider.prototype.getPositionFromValue = function() {
@@ -1699,7 +1912,7 @@ var xgui = function ( p ) {
 		this.draw();
 	}
 
-	this.VSlider.prototype = new Base(); 
+	this.VSlider.prototype = new Base();
 	this.VSlider.prototype.constructor = this.VSlider;
 
 	this.VSlider.prototype.draw = function() {
@@ -1716,7 +1929,7 @@ var xgui = function ( p ) {
 		context.save();
 		context.translate(this.x+9+addx, this.y+this.height-1);
 		context.rotate(-Math.PI/2);
-		
+
 		context.fillStyle = frontColor;
 		context.font = font;
 		context.textBaseline = "alphabetic";
@@ -1737,7 +1950,7 @@ var xgui = function ( p ) {
 		context.beginPath();
 		context.rect(-1,-this.width+1,this.height-p,this.width);
 		context.clip();
-		
+
 		// label2
 		context.fillStyle = bgColor;
 		context.font = font;
@@ -1791,13 +2004,13 @@ var xgui = function ( p ) {
 		this.stickx = 0;
 		this.sticky = 0;
 		this.laststickx = -1;
-		this.laststicky = -1;		
+		this.laststicky = -1;
 		this.maxDistance = this.radius - this.innerRadius - 5;
 		this.mouseIsDown = false;
 		this.draw();
 	}
 
-	this.Joystick.prototype = new Base(); 
+	this.Joystick.prototype = new Base();
 	this.Joystick.prototype.constructor = this.Joystick;
 
 	this.Joystick.prototype.draw = function( updateCalling ) {
@@ -1805,13 +2018,13 @@ var xgui = function ( p ) {
 		// normalize
 		if (!this.mouseIsDown) {
 			this.stickx += (0 - this.stickx)/3;
-			this.sticky += (0 - this.sticky)/3;			
+			this.sticky += (0 - this.sticky)/3;
 		}
 
 		if (this.stickx.toFixed(2) == this.laststickx.toFixed(2) && this.sticky.toFixed(2) == this.laststicky.toFixed(2) && updateCalling) {
 			return;
 		}
-		
+
 		this.value1.v = this.stickx/this.maxDistance;
 		this.value2.v = this.sticky/this.maxDistance;
 
@@ -1823,10 +2036,10 @@ var xgui = function ( p ) {
 		var gradient = context.createRadialGradient(this.centerx, this.centery, this.radius+5, this.centerx-7, this.centery-7, 5);
 		gradient.addColorStop(0, dimColor);
 		gradient.addColorStop(0.2, frontColor);
-		gradient.addColorStop(1, dimColor);		
+		gradient.addColorStop(1, dimColor);
 		context.fillStyle = gradient;
 		context.beginPath();
-		context.arc(this.centerx, this.centery, this.radius, 0, Math.PI*2, false); 
+		context.arc(this.centerx, this.centery, this.radius, 0, Math.PI*2, false);
 		context.closePath();
 		context.fill();
 
@@ -1835,13 +2048,13 @@ var xgui = function ( p ) {
 		// shadow
 		var shadowaddx = (1-this.value1.v)*5;
 		var shadowaddy = (1-this.value2.v)*5;
-		
+
 		var gradient = context.createRadialGradient(this.centerx+this.stickx+shadowaddx, this.centery+this.sticky+shadowaddy, this.innerRadius+10, this.centerx+this.stickx+shadowaddx, this.centery+this.sticky+shadowaddy, 1);
 		gradient.addColorStop(0, 'rgba(0,0,0,0.00001)');
 		gradient.addColorStop(1, 'rgba(0,0,0,1)');
 		context.fillStyle = gradient;
 		context.beginPath();
-		context.arc(this.centerx+this.stickx+shadowaddx, this.centery+this.sticky+shadowaddy, this.innerRadius+10, 0, Math.PI*2, false); 
+		context.arc(this.centerx+this.stickx+shadowaddx, this.centery+this.sticky+shadowaddy, this.innerRadius+10, 0, Math.PI*2, false);
 		context.closePath();
 		context.fill();
 
@@ -1851,7 +2064,7 @@ var xgui = function ( p ) {
 		gradient.addColorStop(1, dimColor);
 		context.fillStyle = gradient;
 		context.beginPath();
-		context.arc(this.centerx+this.stickx, this.centery+this.sticky, this.innerRadius, 0, Math.PI*2, false); 
+		context.arc(this.centerx+this.stickx, this.centery+this.sticky, this.innerRadius, 0, Math.PI*2, false);
 		context.closePath();
 		context.fill();
 
@@ -1861,13 +2074,13 @@ var xgui = function ( p ) {
 		gradient.addColorStop(1, frontColor);
 		context.fillStyle = gradient;
 		context.beginPath();
-		context.arc(this.centerx+this.stickx, this.centery+this.sticky, this.innerRadius-6, 0, Math.PI*2, false); 
+		context.arc(this.centerx+this.stickx, this.centery+this.sticky, this.innerRadius-6, 0, Math.PI*2, false);
 		context.closePath();
 		context.fill();
 
 
 		this.laststickx = this.stickx;
-		this.laststicky = this.sticky;		
+		this.laststicky = this.sticky;
 
 	}
 
@@ -1879,7 +2092,7 @@ var xgui = function ( p ) {
 		this.sticky = y-this.radius;
 
 		var distance = Math.sqrt(this.stickx * this.stickx + this.sticky * this.sticky);
-		
+
 		if (distance > this.maxDistance) {
 			var angleRad = Math.atan2(this.stickx, this.sticky);
 			this.stickx = Math.sin(angleRad) * this.maxDistance;
@@ -1890,14 +2103,14 @@ var xgui = function ( p ) {
 
 		this.value1.updateBind();
 		this.value2.updateBind();
-		
+
 	}
 
 	this.Joystick.prototype.mouseUp = function() {
 		this.mouseIsDown = false;
 		this.value1.updateBind(true);
-		this.value2.updateBind(true);		
-	}	
+		this.value2.updateBind(true);
+	}
 
 
 	/*
@@ -1915,7 +2128,7 @@ var xgui = function ( p ) {
 		this.draw();
 	}
 
-	this.Label.prototype = new Base(); 
+	this.Label.prototype = new Base();
 	this.Label.prototype.constructor = this.Label;
 
 	this.Label.prototype.draw = function() {
@@ -1932,7 +2145,7 @@ var xgui = function ( p ) {
 	}
 
 	this.Label.prototype.mouseDown = function() {
-		
+
 	}
 
 	this.Label.prototype.mouseUp = function() {
@@ -2050,3 +2263,12 @@ HTMLCanvasElement.prototype.relMouseCoords = function (event) {
 
 	return {x:canvasX, y:canvasY}
 }
+});
+
+if (typeof exports == "object") {
+  module.exports = require("xgui");
+} else if (typeof define == "function" && define.amd) {
+  define(function(){ return require("xgui"); });
+} else {
+  window["xgui"] = require("xgui");
+}})();
