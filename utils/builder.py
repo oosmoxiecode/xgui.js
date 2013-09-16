@@ -1,8 +1,8 @@
 import os
 
 rev = 1
-source = '../src/xgui.js'
-build = '../build/xgui.min.js'
+source = '../dist/xgui.js'
+build = '../dist/xgui.min.js'
 header = '// xgui.js r' + str( rev ) + ' - https://github.com/oosmoxiecode/xgui.js\n'
 
 os.system( 'java -jar compiler/compiler.jar --language_in=ECMASCRIPT5 --js ' + source + ' --js_output_file ' + build )

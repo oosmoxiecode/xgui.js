@@ -11,14 +11,14 @@
 			background:#cdcdcd;
 		}
 	</style>
-		
-	<script type="application/javascript" src="../src/xgui.js"></script>
-	<!-- <script type="application/javascript" src="../build/xgui.min.js"></script> -->
+
+	<script type="application/javascript" src="../dist/xgui.js"></script>
+	<!-- <script type="application/javascript" src="../dist/xgui.min.js"></script> -->
 
  </HEAD>
 
 <body>
-	
+
 	<script>
 
 		// xgui test
@@ -29,7 +29,7 @@
 
 		// add to dom
 		document.body.appendChild( gui.getDomElement() );
-		
+
 		// bunch of test elements
 
 		// HSlider
@@ -105,7 +105,7 @@
 			var i1 = new gui.ImageButton( {x: 330, y: 218, image: this } );
 		};
 		image1.src = "assets/flag_en.jpg";
-		
+
 		var image2 = new Image();
 		image2.onload = function () {
 			var i2 = new gui.ImageButton( {x: 350, y: 218, image: this } );
@@ -154,7 +154,7 @@
 		g0.value.bind(testObj1, "a");
 		g0.value.receiver = true; // receiver = true, means the value is updated from the bound object/property and not the other way around.
 		g0.updateInterval = 100; // How many ms between updates, 1000 is One second for example.
-		
+
 		l0.value.bind(testObj1, "b");
 		l0.value.receiver = true;
 		l0.updateInterval = 40;
@@ -174,7 +174,7 @@
 			//console.log(testObj0.x, testObj0.y);
 
 		}
-	
+
 	</script>
 
 	Testbed for <a href="https://github.com/oosmoxiecode/xgui.js">xgui.js</a>.
