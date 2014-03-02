@@ -129,7 +129,7 @@ var xgui = function ( p ) {
 		}
 
 
-		if (isTouchEvent) mouse = event.touches[inputid];
+		if (isTouchEvent) mouse = event.touches[0];
 
 		var m = canvas.relMouseCoords(mouse);
 
