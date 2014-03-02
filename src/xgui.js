@@ -8,8 +8,8 @@ var xgui = function ( p ) {
 
 	var container, canvas, context;
 	var pool = [];
-	var mouseDownArray = [false,false,false,false,false,false,false,false,false,false,false]; // 11 touch events, hopefully no one has more fingers than that...
-	var mouseHitIdArray = [null,null,null,null,null,null,null,null,null,null,null];
+	var mouseDownArray = {}; // hashmap for touch events, indexed by unique ids
+	var mouseHitIdArray = {};
 	var mouseHitCanvas = true;
 	var bgColor = p.backgroundColor || "rgb(100, 100, 100)";
 	var frontColor = p.frontColor || "rgb(230, 230, 230)";
@@ -117,10 +117,13 @@ var xgui = function ( p ) {
 		var inputid = 0;
 		if (isTouchEvent) inputid = event.changedTouches[0].identifier;
 
+		var poolId = mouseHitIdArray[inputid];
+
 		// fix for textfields
 		if (event.target == container || event.target == canvas) {
-			if (mouseHitIdArray[inputid] != null) {
-				if (pool[mouseHitIdArray[inputid]].name != "InputText" && pool[mouseHitIdArray[inputid]].name != "DropDown") {
+			
+			if (poolId != null) {
+				if (pool[poolId].name != "InputText" && pool[poolId].name != "DropDown") {
 					event.preventDefault();
 				}
 			} else {
@@ -129,7 +132,16 @@ var xgui = function ( p ) {
 		}
 
 
-		if (isTouchEvent) mouse = event.touches[inputid];
+		if (isTouchEvent) {
+			var touches = event.touches;
+			for (var i=0; i<touches.length; i++) {
+				mouse = touches[i];
+				if (mouse.identifier == inputid) {
+					break;
+				}
+			}
+			
+		}
 
 		var m = canvas.relMouseCoords(mouse);
 
@@ -140,8 +152,8 @@ var xgui = function ( p ) {
 					o.mouseDown(m.x-o.x,m.y-o.y);
 					mouseDownArray[inputid] = true;
 					// check old id
-					if (mouseHitIdArray[inputid] != null) {
-						var old = pool[mouseHitIdArray[inputid]];
+					if (poolId != null) {
+						var old = pool[poolId];
 						if (old.name == "ColorPicker2") {
 							old.mouseUp();
 						}
