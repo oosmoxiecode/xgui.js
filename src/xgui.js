@@ -37,37 +37,192 @@ var xgui = function ( p ) {
 
 	container.appendChild(canvas);
 
+	// this is not right since devices can have both touchscreen and mouse... need to redo this.
 	var isTouchDevice = ('ontouchstart' in canvas) || (navigator.userAgent.match(/ipad|iphone|android/i) != null);
 
-	if (isTouchDevice) {
+	this.disableEvents = function () {
+
+		if (isTouchDevice) {
+			
+			// touch events
+			document.removeEventListener( 'touchmove', touchMove, false );
+			container.removeEventListener( 'touchstart', touchStart, false );
+			document.removeEventListener( 'touchend', touchEnd, false );
+
+		} else {
+			
+			// mouse events
+			document.removeEventListener( 'mousemove', mouseMove, false );
+			container.removeEventListener( 'mousedown', mouseDown, false );
+			document.removeEventListener( 'mouseup', mouseUp, false );
+
+		}
+
+	}
+
+	this.enableEvents = function () {
+
+		if (isTouchDevice) {
+			
+			// touch events
+			document.addEventListener( 'touchmove', touchMove, false );
+			container.addEventListener( 'touchstart', touchStart, false );
+			document.addEventListener( 'touchend', touchEnd, false );
+
+		} else {
+			
+			// mouse events
+			document.addEventListener( 'mousemove', mouseMove, false );
+			container.addEventListener( 'mousedown', mouseDown, false );
+			document.addEventListener( 'mouseup', mouseUp, false );
+
+		}
+
+	}
+
+	this.enableEvents();
+
+	/*if (isTouchDevice) {
 		
 		// touch events
-		document.addEventListener( 'touchmove', function ( event ) {
-			onMouseMove(event, true);
-		}, false );
-		container.addEventListener( 'touchstart', function ( event ) {
-			onMouseDown(event, true);
-		}, false );
-		document.addEventListener( 'touchend', function ( event ) {
-			onMouseUp(event, true);
-		}, false );
+		container.addEventListener( 'touchmove', touchMove, false );
+		container.addEventListener( 'touchstart', touchStart, false );
+		container.addEventListener( 'touchend', touchEnd, false );
 
 	} else {
 		
 		// mouse events
-		document.addEventListener( 'mousemove', function ( event ) {
-			onMouseMove(event);
-		}, false );
-		container.addEventListener( 'mousedown', function ( event ) {
-			onMouseDown(event);
-		}, false );
-		document.addEventListener( 'mouseup', function ( event ) {
-			onMouseUp(event);
-		}, false );
+		container.addEventListener( 'mousemove', mouseMove, false );
+		container.addEventListener( 'mousedown', mouseDown, false );
+		container.addEventListener( 'mouseup', mouseUp, false );
+
+	}*/
+
+	function touchMove (event) {
+		onMouseMove(event, true);
+	}
+
+	function touchStart (event) {
+		onMouseDown(event, true);
+	}
+
+	function touchEnd (event) {
+		onMouseUp(event, true);
+	}
+
+	function mouseMove (event) {
+		onMouseMove(event);
+	}
+
+	function mouseDown (event) {
+		onMouseDown(event);
+	}
+
+	function mouseUp (event) {
+		onMouseUp(event);
+	}
+
+	function onMouseMove ( event, isTouchEvent ) {
+		
+		event.preventDefault();
+
+		var mouse = event;
+
+		var loopNum = 1;
+		var inputid = 0;
+		if (isTouchEvent) loopNum = event.touches.length;
+
+		for (var t = 0; t < loopNum; t++) {
+
+			if (isTouchEvent) {
+				mouse = event.touches[t];
+				inputid = mouse.identifier;
+			}
+
+			if (!mouseDownArray[inputid]) {
+				if (mouseHitIdArray[inputid] != null) {
+					var o = pool[mouseHitIdArray[inputid]];
+					if (o.name == "ColorPicker2") {
+						var m = canvas.relMouseCoords(mouse);
+						o.mouseMove(m.x-o.x,m.y-o.y);
+					}
+				}
+				return;
+			}
+
+			var m = canvas.relMouseCoords(mouse);
+			var o = pool[mouseHitIdArray[inputid]];
+
+			if (o.name == "CheckBox" || o.name == "RadioButton" || o.name == "Button" || o.name == "ImageButton" || o.name == "Matrix") return;
+			if (o.name == "Stepper" && (o.mouseDownPlus || o.mouseDownMinus)) {
+				return;
+			}
+
+			o.mouseDown(m.x-o.x,m.y-o.y);
+
+		}
+
+	}
+
+	function onMouseDown ( event, isTouchEvent ) {
+
+		var mouse = event;
+
+		var inputid = 0;
+		if (isTouchEvent) inputid = event.changedTouches[0].identifier;
+
+		// fix for textfields
+		if (event.target == container || event.target == canvas) {
+			if (mouseHitIdArray[inputid] != null) {
+				if (pool[mouseHitIdArray[inputid]].name != "InputText" && pool[mouseHitIdArray[inputid]].name != "DropDown") {
+					//event.preventDefault();
+				}
+			} else {
+				//event.preventDefault();
+			}
+		}
+
+
+		if (isTouchEvent) mouse = event.touches[inputid];
+
+		var m = canvas.relMouseCoords(mouse);
+
+		for (var i=0; i<pool.length; ++i ) {
+			var o = pool[i];
+			if (m.x > o.x && m.x < o.x+o.width) {
+				if (m.y > o.y && m.y < o.y+o.height) {
+					o.mouseDown(m.x-o.x,m.y-o.y);
+					mouseDownArray[inputid] = true;
+					// check old id
+					if (mouseHitIdArray[inputid] != null) {
+						var old = pool[mouseHitIdArray[inputid]];
+						if (old.name == "ColorPicker2") {
+							old.mouseUp();
+						}
+					}
+					mouseHitIdArray[inputid] = o.id;
+					break;
+				}
+			}
+		}
+				
+	}
+
+	function onMouseUp ( event, isTouchEvent ) {
+		
+		var inputid = 0;
+		if (isTouchEvent) inputid = event.changedTouches[0].identifier;
+
+		mouseDownArray[inputid] = false;
+		if (mouseHitIdArray[inputid] != null) {
+			var o = pool[mouseHitIdArray[inputid]];
+			o.mouseUp( inputid );
+		}
 
 	}
 
 
+/*
 	function onMouseMove ( event, isTouchEvent ) {
 		
 		event.preventDefault();
@@ -166,7 +321,7 @@ var xgui = function ( p ) {
 		}
 
 	}
-
+*/
 
 	/*
 	 * Base
@@ -1820,10 +1975,10 @@ var xgui = function ( p ) {
 		// ToDo: Move this gradient creation to the construct and use translate instead...
 
 		//draw outer circle
-		var gradient = context.createRadialGradient(this.centerx, this.centery, this.radius+5, this.centerx-7, this.centery-7, 5);
-		gradient.addColorStop(0, dimColor);
-		gradient.addColorStop(0.2, frontColor);
-		gradient.addColorStop(1, dimColor);		
+		var gradient = context.createRadialGradient(this.centerx, this.centery, 0, this.centerx, this.centery, this.radius+5);
+		gradient.addColorStop(0, dimColor);		
+		gradient.addColorStop(0.8, frontColor);
+		gradient.addColorStop(1, dimColor);
 		context.fillStyle = gradient;
 		context.beginPath();
 		context.arc(this.centerx, this.centery, this.radius, 0, Math.PI*2, false); 
@@ -1835,10 +1990,10 @@ var xgui = function ( p ) {
 		// shadow
 		var shadowaddx = (1-this.value1.v)*5;
 		var shadowaddy = (1-this.value2.v)*5;
-		
-		var gradient = context.createRadialGradient(this.centerx+this.stickx+shadowaddx, this.centery+this.sticky+shadowaddy, this.innerRadius+10, this.centerx+this.stickx+shadowaddx, this.centery+this.sticky+shadowaddy, 1);
-		gradient.addColorStop(0, 'rgba(0,0,0,0.00001)');
-		gradient.addColorStop(1, 'rgba(0,0,0,1)');
+
+		var gradient = context.createRadialGradient(this.centerx+this.stickx+shadowaddx, this.centery+this.sticky+shadowaddy, 0, this.centerx+this.stickx+shadowaddx, this.centery+this.sticky+shadowaddy, this.innerRadius+10);
+		gradient.addColorStop(0, 'rgba(0,0,0,1)');
+		gradient.addColorStop(1, 'rgba(0,0,0,0.00001)');
 		context.fillStyle = gradient;
 		context.beginPath();
 		context.arc(this.centerx+this.stickx+shadowaddx, this.centery+this.sticky+shadowaddy, this.innerRadius+10, 0, Math.PI*2, false); 
@@ -1856,12 +2011,12 @@ var xgui = function ( p ) {
 		context.fill();
 
 		// gradient + second circle
-		var gradient = context.createRadialGradient(this.centerx+this.stickx, this.centery+this.sticky, this.radius, this.centerx+this.stickx, this.centery+this.sticky, 1);
-		gradient.addColorStop(0, dimColor);
-		gradient.addColorStop(1, frontColor);
+		var gradient = context.createRadialGradient(this.centerx+this.stickx, this.centery+this.sticky, 0, this.centerx+this.stickx, this.centery+this.sticky, this.radius);
+		gradient.addColorStop(0, frontColor);
+		gradient.addColorStop(1, dimColor);
 		context.fillStyle = gradient;
 		context.beginPath();
-		context.arc(this.centerx+this.stickx, this.centery+this.sticky, this.innerRadius-6, 0, Math.PI*2, false); 
+		context.arc(this.centerx+this.stickx, this.centery+this.sticky, this.innerRadius-4, 0, Math.PI*2, false); 
 		context.closePath();
 		context.fill();
 
@@ -1980,7 +2135,6 @@ var xgui = function ( p ) {
 
 		}
 	}
-
 
 	return {
 
