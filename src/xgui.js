@@ -8,8 +8,10 @@ var xgui = function ( p ) {
 
 	var container, canvas, context;
 	var pool = [];
-	var mouseDownArray = [false,false,false,false,false,false,false,false,false,false,false]; // 11 touch events, hopefully no one has more fingers than that...
-	var mouseHitIdArray = [null,null,null,null,null,null,null,null,null,null,null];
+	//var mouseDownArray = [false,false,false,false,false,false,false,false,false,false,false]; // 11 touch events, hopefully no one has more fingers than that...
+	//var mouseHitIdArray = [null,null,null,null,null,null,null,null,null,null,null];
+	var mouseDownArray = {}; // hashmap for touch events, indexed by unique ids
+	var mouseHitIdArray = {};
 	var mouseHitCanvas = true;
 	var bgColor = p.backgroundColor || "rgb(100, 100, 100)";
 	var frontColor = p.frontColor || "rgb(230, 230, 230)";
@@ -175,9 +177,10 @@ var xgui = function ( p ) {
 		var inputid = 0;
 		if (isTouchEvent) inputid = event.changedTouches[0].identifier;
 
-		// not sure this is needed anymore...
+		var poolId = mouseHitIdArray[inputid];
+
 		// fix for textfields
-		/*if (event.target == container || event.target == canvas) {
+		if (event.target == container || event.target == canvas) {
 			if (mouseHitIdArray[inputid] != null) {
 				if (pool[mouseHitIdArray[inputid]].name != "InputText" && pool[mouseHitIdArray[inputid]].name != "DropDown") {
 					event.preventDefault();
@@ -185,10 +188,19 @@ var xgui = function ( p ) {
 			} else {
 				event.preventDefault();
 			}
-		}*/
+		}
 
 
-		if (isTouchEvent) mouse = event.touches[inputid];
+		//if (isTouchEvent) mouse = event.touches[inputid];
+		if (isTouchEvent) {
+			var touches = event.touches;
+			for (var i=0; i<touches.length; i++) {
+				mouse = touches[i];
+				if (mouse.identifier == inputid) {
+					break;
+				}
+			}
+		}
 
 		//var m = canvas.relMouseCoords(mouse);
 		var m = {x: mouse.clientX - mouse.target.offsetLeft, y: mouse.clientY - mouse.target.offsetTop};
@@ -200,8 +212,10 @@ var xgui = function ( p ) {
 					o.mouseDown(m.x-o.x,m.y-o.y);
 					mouseDownArray[inputid] = true;
 					// check old id
-					if (mouseHitIdArray[inputid] != null) {
-						var old = pool[mouseHitIdArray[inputid]];
+					//if (mouseHitIdArray[inputid] != null) {
+					//	var old = pool[mouseHitIdArray[inputid]];
+					if (poolId != null) {
+						var old = pool[poolId];
 						if (old.name == "ColorPicker2") {
 							old.mouseUp();
 						}
@@ -217,12 +231,37 @@ var xgui = function ( p ) {
 	function onMouseUp ( event, isTouchEvent ) {
 		
 		var inputid = 0;
-		if (isTouchEvent) inputid = event.changedTouches[0].identifier;
+		/*if (isTouchEvent) inputid = event.changedTouches[0].identifier;
 
 		mouseDownArray[inputid] = false;
 		if (mouseHitIdArray[inputid] != null) {
 			var o = pool[mouseHitIdArray[inputid]];
 			o.mouseUp( inputid );
+		}*/
+
+		if (isTouchEvent) {
+
+			var touches = event.changedTouches;
+			for (var i=0; i<touches.length; i++) {
+
+				inputid = touches[i].identifier;
+
+				mouseDownArray[inputid] = false;
+
+				if (mouseHitIdArray[inputid] != null) {
+					var o = pool[mouseHitIdArray[inputid]];
+					o.mouseUp( inputid );
+				}
+			}
+
+		} else {
+
+			mouseDownArray[inputid] = false;
+			if (mouseHitIdArray[inputid] != null) {
+				var o = pool[mouseHitIdArray[inputid]];
+				o.mouseUp( inputid );
+			}
+
 		}
 
 	}
@@ -450,6 +489,7 @@ var xgui = function ( p ) {
 	}
 
 	this.Matrix.prototype.mouseDown = function(x,y) {
+
 		var gridx = Math.floor(x/(this.size+1));
 		var gridy = Math.floor(y/(this.size+1));
 		
