@@ -39,45 +39,45 @@ var xgui = function ( p ) {
 	container.appendChild(canvas);
 
 	// this is not right since devices can have both touchscreen and mouse... need to redo this.
-	var isTouchDevice = ('ontouchstart' in canvas) || (navigator.userAgent.match(/ipad|iphone|android/i) != null);
+	//var isTouchDevice = ('ontouchstart' in canvas) || (navigator.userAgent.match(/ipad|iphone|android/i) != null);
 
 	this.disableEvents = function () {
 
-		if (isTouchDevice) {
+		//if (isTouchDevice) {
 			
 			// touch events
 			document.removeEventListener( 'touchmove', touchMove, false );
 			container.removeEventListener( 'touchstart', touchStart, false );
 			document.removeEventListener( 'touchend', touchEnd, false );
 
-		} else {
+		//} else {
 			
 			// mouse events
 			document.removeEventListener( 'mousemove', mouseMove, false );
 			container.removeEventListener( 'mousedown', mouseDown, false );
 			document.removeEventListener( 'mouseup', mouseUp, false );
 
-		}
+		//}
 
 	}
 
 	this.enableEvents = function () {
 
-		if (isTouchDevice) {
+		//if (isTouchDevice) {
 			
 			// touch events
 			document.addEventListener( 'touchmove', touchMove, false );
 			container.addEventListener( 'touchstart', touchStart, false );
 			document.addEventListener( 'touchend', touchEnd, false );
 
-		} else {
+		//} else {
 			
 			// mouse events
 			document.addEventListener( 'mousemove', mouseMove, false );
 			container.addEventListener( 'mousedown', mouseDown, false );
 			document.addEventListener( 'mouseup', mouseUp, false );
 
-		}
+		//}
 
 	}
 
@@ -144,14 +144,17 @@ var xgui = function ( p ) {
 				if (mouseHitIdArray[inputid] != null) {
 					var o = pool[mouseHitIdArray[inputid]];
 					if (o.name == "ColorPicker2") {
-						var m = canvas.relMouseCoords(mouse);
+						//var m = canvas.relMouseCoords(mouse);
+						var m = {x: mouse.clientX - mouse.target.offsetLeft, y: mouse.clientY - mouse.target.offsetTop};
+						
 						o.mouseMove(m.x-o.x,m.y-o.y);
 					}
 				}
 				return;
 			}
 
-			var m = canvas.relMouseCoords(mouse);
+			//var m = canvas.relMouseCoords(mouse);
+			var m = {x: mouse.clientX - mouse.target.offsetLeft, y: mouse.clientY - mouse.target.offsetTop};
 			var o = pool[mouseHitIdArray[inputid]];
 
 			if (o.name == "CheckBox" || o.name == "RadioButton" || o.name == "Button" || o.name == "ImageButton" || o.name == "Matrix") return;
@@ -172,21 +175,23 @@ var xgui = function ( p ) {
 		var inputid = 0;
 		if (isTouchEvent) inputid = event.changedTouches[0].identifier;
 
+		// not sure this is needed anymore...
 		// fix for textfields
-		if (event.target == container || event.target == canvas) {
+		/*if (event.target == container || event.target == canvas) {
 			if (mouseHitIdArray[inputid] != null) {
 				if (pool[mouseHitIdArray[inputid]].name != "InputText" && pool[mouseHitIdArray[inputid]].name != "DropDown") {
-					//event.preventDefault();
+					event.preventDefault();
 				}
 			} else {
-				//event.preventDefault();
+				event.preventDefault();
 			}
-		}
+		}*/
 
 
 		if (isTouchEvent) mouse = event.touches[inputid];
 
-		var m = canvas.relMouseCoords(mouse);
+		//var m = canvas.relMouseCoords(mouse);
+		var m = {x: mouse.clientX - mouse.target.offsetLeft, y: mouse.clientY - mouse.target.offsetTop};
 
 		for (var i=0; i<pool.length; ++i ) {
 			var o = pool[i];
@@ -1288,9 +1293,9 @@ var xgui = function ( p ) {
 		if (this.open) {
 			if (x > 0 && x < this.colorwidth-1) {
 				if (y > this.frameheight && y < this.frameheight+this.colorheight) {
-					if (isTouchDevice) {
+					//if (isTouchDevice) {
 						this.mouseMove(x,y);
-					}
+					//}
 					this.oldColor = { r:this.r, g:this.g, b:this.b };
 				}
 			}
@@ -2192,7 +2197,7 @@ function colorToHex(c) {
 	var m = /rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/.exec(c);
 	return m ? (1 << 24 | m[1] << 16 | m[2] << 8 | m[3]).toString(16).substr(1) : c;
 }
-
+/*
 HTMLCanvasElement.prototype.relMouseCoords = function (event) {
 	var totalOffsetX = 0;
 	var totalOffsetY = 0;
@@ -2214,4 +2219,4 @@ HTMLCanvasElement.prototype.relMouseCoords = function (event) {
 	canvasY = Math.round( canvasY * (this.height / this.offsetHeight) );
 
 	return {x:canvasX, y:canvasY}
-}
+}*/
