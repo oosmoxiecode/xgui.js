@@ -1506,9 +1506,9 @@ var xgui = function ( p ) {
 		this.max = p.max || 100;
 		this.range = this.max - this.min;
 		this.value = new Value(p.value || 0);
+		this.mPI = Math.PI*0.8;
 		this.rotationValue = this.getRotationValue();
-		this.lastMouseX = null;
-		this.lastMouseY = null;
+		this.lastRotationValue = this.rotationValue;
 		this.decimals = p.decimals || 0;
 		this.draw();
 	}
@@ -1517,8 +1517,16 @@ var xgui = function ( p ) {
 	this.Knob.prototype.constructor = this.Knob;
 
 	this.Knob.prototype.getRotationValue = function() {
-		var steps = 1/this.range;
-		var value = (this.value.v-this.min)*steps;
+		var range = this.mPI - -this.mPI;
+
+		var percent = (this.value.v - this.min)/this.max;
+		// this could be totally unstable, not tested very much...
+		if (this.value.v < 0) {
+			percent = (this.value.v - this.min)/(this.max*2);
+		}
+
+		var value = (percent*range) - this.mPI;
+
 		return value;
 	}
 
@@ -1535,8 +1543,8 @@ var xgui = function ( p ) {
 		context.fill();
 
 		// draw lines
-		var startangle = Math.PI+(Math.PI/1.25);
-		var endangle = Math.PI-(Math.PI/1.25);
+		var startangle = Math.PI+this.mPI;
+		var endangle = Math.PI-this.mPI;
 		var step = (startangle-endangle)/this.radius;
 
 		context.strokeStyle = bgColor;
@@ -1556,12 +1564,10 @@ var xgui = function ( p ) {
 
 		}
 
-		this.rotationValue = this.getRotationValue();
-
 		// line
-		var valueadd = (startangle-endangle)*this.rotationValue;
-		var linex = this.centerx + Math.sin(startangle-valueadd)*(this.radius);
-		var liney = this.centery + Math.cos(startangle-valueadd)*(this.radius);
+		var linex = this.centerx + Math.cos(this.rotationValue - Math.PI*0.5)*(this.radius);
+		var liney = this.centery + Math.sin(this.rotationValue - Math.PI*0.5)*(this.radius);
+
 		context.strokeStyle = frontColor;
 		context.lineWidth = 2.0;
 		context.beginPath();
@@ -1579,25 +1585,34 @@ var xgui = function ( p ) {
 	}
 
 	this.Knob.prototype.mouseDown = function(x,y) {
-		if (this.lastMouseX != null) {
-			var difx = x-this.lastMouseX;
-			var dify = y-this.lastMouseY;
 
-			var avg = (difx-dify)/100;//-this.range;
-			avg *= this.range;
-			this.value.v += avg;
-			
-			this.draw();
-			this.value.updateBind();
+	    var dx = this.radius - x;
+	    var dy = this.radius - y;
+	    this.rotationValue = Math.atan2(dx,dy)*-1;
+
+	    if (this.rotationValue > this.mPI) this.rotationValue = this.mPI;
+	    if (this.rotationValue < -this.mPI) this.rotationValue = -this.mPI;
+	
+		// too much dif, use old value
+		var dif = Math.abs(this.rotationValue - this.lastRotationValue);
+		if (dif > Math.PI) {
+			this.rotationValue = this.lastRotationValue;
 		}
 		
-		this.lastMouseX = x;
-		this.lastMouseY = y;
+		var range = this.mPI - -this.mPI;
+		var steps = 1/range;
+		var value = (this.rotationValue - -this.mPI)*steps;
+
+		this.value.v = (this.range*value)+this.min;
+		
+		this.draw();
+		this.value.updateBind();
+
+		this.lastRotationValue = this.rotationValue;
+	
 	}
 
 	this.Knob.prototype.mouseUp = function() {
-		this.lastMouseX = null;
-		this.lastMouseY = null;
 		this.value.updateBind(true);
 	}
 
