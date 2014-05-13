@@ -24,11 +24,12 @@ var xgui = function ( p ) {
 	this.width = p.width || 600;
 	this.height = p.height || 400;
 
+
 	container = document.createElement( "div" );
-	container.style.position = "relative";
+	container.style.position = p.position || "relative";
 	container.style.width = ""+this.width+"px";
 	container.style.height = ""+this.height+"px";
-	container.setAttribute("id","xgui_container");
+	container.setAttribute("id", p.id || "xgui_container");
 
 	canvas = document.createElement("canvas");
 	canvas.width = this.width;
