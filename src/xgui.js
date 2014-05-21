@@ -949,7 +949,7 @@ var xgui = function ( p ) {
 		context.textAlign = "left";
 		context.fillText(this.text, this.x+4, this.y+11+addy);
 		var labelWidth = context.measureText(this.text);
-		this.width = this.fullWidth + labelWidth.width + 9;
+		this.width = Math.round( this.fullWidth + labelWidth.width ) + 9;
 
 	}
 
@@ -1023,8 +1023,8 @@ var xgui = function ( p ) {
 		context.closePath();
 		context.stroke();
 
-		var x = this.getXPositionFromValue();
-		var y = this.getYPositionFromValue();
+		var x = Math.round( this.getXPositionFromValue() );
+		var y = Math.round( this.getYPositionFromValue() );
 
 		var half = this.size/2;
 
