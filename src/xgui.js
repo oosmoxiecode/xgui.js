@@ -2012,6 +2012,16 @@ var xgui = function ( p ) {
 
 	}
 
+	this.onResize = function () {
+		
+		container.style.width = ""+this.width+"px";
+		container.style.height = ""+this.height+"px";
+
+		canvas.width = this.width;
+		canvas.height = this.height;
+
+	}
+
 	this.update = function () {
 		time = Date.now();
 		delta = time - oldTime;
@@ -2077,7 +2087,10 @@ var xgui = function ( p ) {
 		Matrix: this.Matrix,
 		RangeSlider: this.RangeSlider,
 		Joystick: this.Joystick,
-		update: this.update
+		update: this.update,
+		onResize: this.onResize,
+		disableEvents: this.disableEvents,
+		enableEvents: this.enableEvents,
 
 	};
 
