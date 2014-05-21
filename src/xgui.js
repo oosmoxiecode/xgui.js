@@ -1101,9 +1101,9 @@ var xgui = function ( p ) {
 		this.colorheight = p.height || 30;
 		this.width = this.framewidth;
 		this.height = this.frameheight;
-		this.r = p.r || 255;
-		this.g = p.g || 255;
-		this.b = p.b || 255;
+		this.r = (p.r || p.r === 0) ? p.r : 255;
+		this.g = (p.g || p.g === 0) ? p.g : 255;
+		this.b = (p.b || p.b === 0) ? p.b : 255;
 		this.oldColor = { r:this.r, g:this.g, b:this.b };
 		this.open = false;
 		this.mousehack = false;
@@ -1301,9 +1301,9 @@ var xgui = function ( p ) {
 		this.frameheight = p.frameheight || 10;		
 		this.width = p.width || 100;
 		this.height = p.height || 20;
-		this.r = p.r || 255;
-		this.g = p.g || 255;
-		this.b = p.b || 255;
+		this.r = (p.r || p.r === 0) ? p.r : 255;
+		this.g = (p.g || p.g === 0) ? p.g : 255;
+		this.b = (p.b || p.b === 0) ? p.b : 255;
 		this.hex = p.hex || colorToHex("rgb("+this.r+","+this.g+","+this.b+")");
 		this.value = new Value(this.hex);
 		this.draw();
