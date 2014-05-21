@@ -8,10 +8,8 @@ var xgui = function ( p ) {
 
 	var container, canvas, context;
 	var pool = [];
-	//var mouseDownArray = [false,false,false,false,false,false,false,false,false,false,false]; // 11 touch events, hopefully no one has more fingers than that...
-	//var mouseHitIdArray = [null,null,null,null,null,null,null,null,null,null,null];
-	var mouseDownArray = {}; // hashmap for touch events, indexed by unique ids
-	var mouseHitIdArray = {};
+	var mouseDownMap = {}; // hashmap for touch events, indexed by unique ids
+	var mouseHitIdMap = {};
 	var mouseHitCanvas = true;
 	var bgColor = p.backgroundColor || "rgb(100, 100, 100)";
 	var frontColor = p.frontColor || "rgb(230, 230, 230)";
@@ -40,66 +38,36 @@ var xgui = function ( p ) {
 
 	container.appendChild(canvas);
 
-	// this is not right since devices can have both touchscreen and mouse... need to redo this.
-	//var isTouchDevice = ('ontouchstart' in canvas) || (navigator.userAgent.match(/ipad|iphone|android/i) != null);
-
 	this.disableEvents = function () {
 
-		//if (isTouchDevice) {
-			
-			// touch events
-			document.removeEventListener( 'touchmove', touchMove, false );
-			container.removeEventListener( 'touchstart', touchStart, false );
-			document.removeEventListener( 'touchend', touchEnd, false );
-
-		//} else {
-			
-			// mouse events
-			document.removeEventListener( 'mousemove', mouseMove, false );
-			container.removeEventListener( 'mousedown', mouseDown, false );
-			document.removeEventListener( 'mouseup', mouseUp, false );
-
-		//}
+		// touch events
+		document.removeEventListener( 'touchmove', touchMove, false );
+		container.removeEventListener( 'touchstart', touchStart, false );
+		document.removeEventListener( 'touchend', touchEnd, false );
+		
+		// mouse events
+		document.removeEventListener( 'mousemove', mouseMove, false );
+		container.removeEventListener( 'mousedown', mouseDown, false );
+		document.removeEventListener( 'mouseup', mouseUp, false );
 
 	}
 
 	this.enableEvents = function () {
 
-		//if (isTouchDevice) {
+		// touch events
+		document.addEventListener( 'touchmove', touchMove, false );
+		container.addEventListener( 'touchstart', touchStart, false );
+		document.addEventListener( 'touchend', touchEnd, false );
 			
-			// touch events
-			document.addEventListener( 'touchmove', touchMove, false );
-			container.addEventListener( 'touchstart', touchStart, false );
-			document.addEventListener( 'touchend', touchEnd, false );
-
-		//} else {
-			
-			// mouse events
-			document.addEventListener( 'mousemove', mouseMove, false );
-			container.addEventListener( 'mousedown', mouseDown, false );
-			document.addEventListener( 'mouseup', mouseUp, false );
-
-		//}
+		// mouse events
+		document.addEventListener( 'mousemove', mouseMove, false );
+		container.addEventListener( 'mousedown', mouseDown, false );
+		document.addEventListener( 'mouseup', mouseUp, false );
 
 	}
 
 	this.enableEvents();
 
-	/*if (isTouchDevice) {
-		
-		// touch events
-		container.addEventListener( 'touchmove', touchMove, false );
-		container.addEventListener( 'touchstart', touchStart, false );
-		container.addEventListener( 'touchend', touchEnd, false );
-
-	} else {
-		
-		// mouse events
-		container.addEventListener( 'mousemove', mouseMove, false );
-		container.addEventListener( 'mousedown', mouseDown, false );
-		container.addEventListener( 'mouseup', mouseUp, false );
-
-	}*/
 
 	function touchMove (event) {
 		onMouseMove(event, true);
@@ -142,12 +110,12 @@ var xgui = function ( p ) {
 				inputid = mouse.identifier;
 			}
 
-			if (!mouseDownArray[inputid]) {
-				if (mouseHitIdArray[inputid] != null) {
-					var o = pool[mouseHitIdArray[inputid]];
+			if (!mouseDownMap[inputid]) {
+				if (mouseHitIdMap[inputid] != null) {
+					var o = pool[mouseHitIdMap[inputid]];
 					if (o.name == "ColorPicker2") {
-						//var m = canvas.relMouseCoords(mouse);
-						var m = {x: mouse.clientX - mouse.target.offsetLeft, y: mouse.clientY - mouse.target.offsetTop};
+						var m = canvas.relMouseCoords(mouse);
+						//var m = {x: mouse.clientX - mouse.target.offsetLeft, y: mouse.clientY - mouse.target.offsetTop};
 						
 						o.mouseMove(m.x-o.x,m.y-o.y);
 					}
@@ -155,9 +123,9 @@ var xgui = function ( p ) {
 				return;
 			}
 
-			//var m = canvas.relMouseCoords(mouse);
-			var m = {x: mouse.clientX - mouse.target.offsetLeft, y: mouse.clientY - mouse.target.offsetTop};
-			var o = pool[mouseHitIdArray[inputid]];
+			var m = canvas.relMouseCoords(mouse);
+			//var m = {x: mouse.clientX - mouse.target.offsetLeft, y: mouse.clientY - mouse.target.offsetTop};
+			var o = pool[mouseHitIdMap[inputid]];
 
 			if (o.name == "CheckBox" || o.name == "RadioButton" || o.name == "Button" || o.name == "ImageButton" || o.name == "Matrix") return;
 			if (o.name == "Stepper" && (o.mouseDownPlus || o.mouseDownMinus)) {
@@ -174,70 +142,60 @@ var xgui = function ( p ) {
 
 		var mouse = event;
 
+		var loopNum = 1;
 		var inputid = 0;
-		if (isTouchEvent) inputid = event.changedTouches[0].identifier;
+		if (isTouchEvent) loopNum = event.changedTouches.length;
 
-		var poolId = mouseHitIdArray[inputid];
+		for (var t = 0; t < loopNum; t++) {
 
-		// fix for textfields
-		if (event.target == container || event.target == canvas) {
-			if (mouseHitIdArray[inputid] != null) {
-				if (pool[mouseHitIdArray[inputid]].name != "InputText" && pool[mouseHitIdArray[inputid]].name != "DropDown") {
+			if (isTouchEvent) {
+				inputid = event.changedTouches[t].identifier;
+				mouse = event.changedTouches[t];
+			}
+
+			var poolId = mouseHitIdMap[inputid];
+
+			// fix for textfields
+			if (event.target == container || event.target == canvas) {
+				if (mouseHitIdMap[inputid] != null) {
+					if (pool[mouseHitIdMap[inputid]].name != "InputText" && pool[mouseHitIdMap[inputid]].name != "DropDown") {
+						event.preventDefault();
+					}
+				} else {
 					event.preventDefault();
 				}
-			} else {
-				event.preventDefault();
 			}
-		}
 
+			var m = canvas.relMouseCoords(mouse);
+			//var m = {x: mouse.clientX - mouse.target.offsetLeft, y: mouse.clientY - mouse.target.offsetTop};
 
-		//if (isTouchEvent) mouse = event.touches[inputid];
-		if (isTouchEvent) {
-			var touches = event.touches;
-			for (var i=0; i<touches.length; i++) {
-				mouse = touches[i];
-				if (mouse.identifier == inputid) {
-					break;
-				}
-			}
-		}
-
-		//var m = canvas.relMouseCoords(mouse);
-		var m = {x: mouse.clientX - mouse.target.offsetLeft, y: mouse.clientY - mouse.target.offsetTop};
-
-		for (var i=0; i<pool.length; ++i ) {
-			var o = pool[i];
-			if (m.x > o.x && m.x < o.x+o.width) {
-				if (m.y > o.y && m.y < o.y+o.height) {
-					o.mouseDown(m.x-o.x,m.y-o.y);
-					mouseDownArray[inputid] = true;
-					// check old id
-					//if (mouseHitIdArray[inputid] != null) {
-					//	var old = pool[mouseHitIdArray[inputid]];
-					if (poolId != null) {
-						var old = pool[poolId];
-						if (old.name == "ColorPicker2") {
-							old.mouseUp();
+			for (var i=0; i<pool.length; ++i ) {
+				var o = pool[i];
+				if (m.x > o.x && m.x < o.x+o.width) {
+					if (m.y > o.y && m.y < o.y+o.height) {
+						o.mouseDown(m.x-o.x,m.y-o.y);
+						mouseDownMap[inputid] = true;
+						// check old id
+						if (poolId != null) {
+							var old = pool[poolId];
+							if (old.name == "ColorPicker2") {
+								old.mouseUp();
+							}
 						}
+						mouseHitIdMap[inputid] = o.id;
+						break;
 					}
-					mouseHitIdArray[inputid] = o.id;
-					break;
 				}
 			}
+			
 		}
-				
+
+
 	}
 
 	function onMouseUp ( event, isTouchEvent ) {
 		
 		var inputid = 0;
-		/*if (isTouchEvent) inputid = event.changedTouches[0].identifier;
-
-		mouseDownArray[inputid] = false;
-		if (mouseHitIdArray[inputid] != null) {
-			var o = pool[mouseHitIdArray[inputid]];
-			o.mouseUp( inputid );
-		}*/
 
 		if (isTouchEvent) {
 
@@ -246,19 +204,19 @@ var xgui = function ( p ) {
 
 				inputid = touches[i].identifier;
 
-				mouseDownArray[inputid] = false;
+				mouseDownMap[inputid] = false;
 
-				if (mouseHitIdArray[inputid] != null) {
-					var o = pool[mouseHitIdArray[inputid]];
+				if (mouseHitIdMap[inputid] != null) {
+					var o = pool[mouseHitIdMap[inputid]];
 					o.mouseUp( inputid );
 				}
 			}
 
 		} else {
 
-			mouseDownArray[inputid] = false;
-			if (mouseHitIdArray[inputid] != null) {
-				var o = pool[mouseHitIdArray[inputid]];
+			mouseDownMap[inputid] = false;
+			if (mouseHitIdMap[inputid] != null) {
+				var o = pool[mouseHitIdMap[inputid]];
 				o.mouseUp( inputid );
 			}
 
@@ -266,107 +224,6 @@ var xgui = function ( p ) {
 
 	}
 
-
-/*
-	function onMouseMove ( event, isTouchEvent ) {
-		
-		event.preventDefault();
-
-		var mouse = event;
-
-		var loopNum = 1;
-		var inputid = 0;
-		if (isTouchEvent) loopNum = event.touches.length;
-
-		for (var t = 0; t < loopNum; t++) {
-
-			if (isTouchEvent) {
-				mouse = event.touches[t];
-				inputid = mouse.identifier;
-			}
-
-			if (!mouseDownArray[inputid]) {
-				if (mouseHitIdArray[inputid] != null) {
-					var o = pool[mouseHitIdArray[inputid]];
-					if (o.name == "ColorPicker2") {
-						var m = canvas.relMouseCoords(mouse);
-						o.mouseMove(m.x-o.x,m.y-o.y);
-					}
-				}
-				return;
-			}
-
-			var m = canvas.relMouseCoords(mouse);
-			var o = pool[mouseHitIdArray[inputid]];
-
-			if (o.name == "CheckBox" || o.name == "RadioButton" || o.name == "Button" || o.name == "ImageButton" || o.name == "Matrix") return;
-			if (o.name == "Stepper" && (o.mouseDownPlus || o.mouseDownMinus)) {
-				return;
-			}
-
-			o.mouseDown(m.x-o.x,m.y-o.y);
-
-		}
-
-	}
-
-	function onMouseDown ( event, isTouchEvent ) {
-
-		var mouse = event;
-
-		var inputid = 0;
-		if (isTouchEvent) inputid = event.changedTouches[0].identifier;
-
-		// fix for textfields
-		if (event.target == container || event.target == canvas) {
-			if (mouseHitIdArray[inputid] != null) {
-				if (pool[mouseHitIdArray[inputid]].name != "InputText" && pool[mouseHitIdArray[inputid]].name != "DropDown") {
-					event.preventDefault();
-				}
-			} else {
-				event.preventDefault();
-			}
-		}
-
-
-		if (isTouchEvent) mouse = event.touches[inputid];
-
-		var m = canvas.relMouseCoords(mouse);
-
-		for (var i=0; i<pool.length; ++i ) {
-			var o = pool[i];
-			if (m.x > o.x && m.x < o.x+o.width) {
-				if (m.y > o.y && m.y < o.y+o.height) {
-					o.mouseDown(m.x-o.x,m.y-o.y);
-					mouseDownArray[inputid] = true;
-					// check old id
-					if (mouseHitIdArray[inputid] != null) {
-						var old = pool[mouseHitIdArray[inputid]];
-						if (old.name == "ColorPicker2") {
-							old.mouseUp();
-						}
-					}
-					mouseHitIdArray[inputid] = o.id;
-					break;
-				}
-			}
-		}
-				
-	}
-
-	function onMouseUp ( event, isTouchEvent ) {
-		
-		var inputid = 0;
-		if (isTouchEvent) inputid = event.changedTouches[0].identifier;
-
-		mouseDownArray[inputid] = false;
-		if (mouseHitIdArray[inputid] != null) {
-			var o = pool[mouseHitIdArray[inputid]];
-			o.mouseUp( inputid );
-		}
-
-	}
-*/
 
 	/*
 	 * Base
@@ -1417,14 +1274,14 @@ var xgui = function ( p ) {
 
 	this.ColorPicker2.prototype.mouseUp = function( inputid ) {
 		if (!this.open) {
-			mouseHitIdArray[inputid] = null;
+			mouseHitIdMap[inputid] = null;
 		}
 		if (this.mousehack) {
 			this.setOldColor();
 
 			this.mouseDown();
 			
-			mouseHitIdArray[inputid] = null;
+			mouseHitIdMap[inputid] = null;
 		}
 
 		this.mousehack = true;
@@ -2237,7 +2094,7 @@ function colorToHex(c) {
 	var m = /rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/.exec(c);
 	return m ? (1 << 24 | m[1] << 16 | m[2] << 8 | m[3]).toString(16).substr(1) : c;
 }
-/*
+
 HTMLCanvasElement.prototype.relMouseCoords = function (event) {
 	var totalOffsetX = 0;
 	var totalOffsetY = 0;
@@ -2259,4 +2116,4 @@ HTMLCanvasElement.prototype.relMouseCoords = function (event) {
 	canvasY = Math.round( canvasY * (this.height / this.offsetHeight) );
 
 	return {x:canvasX, y:canvasY}
-}*/
+}
