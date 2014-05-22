@@ -1418,17 +1418,15 @@ var xgui = function ( p ) {
 	this.Knob.prototype.constructor = this.Knob;
 
 	this.Knob.prototype.getRotationValue = function() {
+
 		var range = this.mPI - -this.mPI;
 
-		var percent = (this.value.v - this.min)/this.max;
-		// this could be totally unstable, not tested very much...
-		if (this.value.v < 0) {
-			percent = (this.value.v - this.min)/(this.max*2);
-		}
+		var percent = (this.value.v - this.min)/(this.max - this.min);
 
-		var value = (percent*range) - this.mPI;
+		var value = (percent*range) - (this.mPI);
 
 		return value;
+
 	}
 
 	this.Knob.prototype.draw = function() {
@@ -2052,7 +2050,7 @@ var xgui = function ( p ) {
 	    this.rotationValue = Math.atan2(dy, dx) - Math.PI*0.5;
 
 		var range = Math.PI*2;
-		this.rotationValue = (((this.rotationValue%range)+range)%range);
+		this.rotationValue = (((this.rotationValue%range)+range)%range); // keep it between 0 - Pi2 
 
 		// too much dif, use old value
 		var dif = Math.abs(this.rotationValue - this.lastRotationValue);
