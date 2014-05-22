@@ -5,7 +5,7 @@ Some simple gui stuff to try and make js experimentation a bit easier.
 
 The idea is to be able to quickly set up a bunch of sliders, knobs, colorPickers, etc. and bind the values of these to objects or functions.
 
-It gives you a bunch of gui stuff, like these(click screenshot to open, or a more touch friendly one [here](http://oosmoxiecode.github.com/examples/xgui.js/testbed_touch.html)):
+It gives you a bunch of gui stuff, like [these](http://oosmoxiecode.github.io/examples/xgui.js/testbed.html)(or a more touch friendly one [here](http://oosmoxiecode.github.com/examples/xgui.js/testbed_touch.html)):
 
 [![example](http://oosmoxiecode.github.com/assets/xgui.png)](http://oosmoxiecode.github.com/examples/xgui.js/testbed.html)
 
@@ -37,7 +37,7 @@ So when you drag the slider testObject.x and testObject.y will be set to the val
 
 More examples to come. For now look in */examples/testbed.html* and */examples/testbed_touch.html* for some idea of how to use it.
 
-Inspiration came from similar stuff for OpenFrameworks, like [this](http://forum.openframeworks.cc/index.php?topic=4376.0).
+Inspiration came from similar stuff for OpenFrameworks, like [this](http://forum.openframeworks.cc/t/different-guis-for-openframeworks/4376).
 
 It currently includes these elements:
 **HSlider,
