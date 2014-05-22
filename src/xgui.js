@@ -101,12 +101,12 @@ var xgui = function ( p ) {
 
 		var loopNum = 1;
 		var inputid = 0;
-		if (isTouchEvent) loopNum = event.touches.length;
+		if (isTouchEvent) loopNum = event.changedTouches.length;
 
 		for (var t = 0; t < loopNum; t++) {
 
 			if (isTouchEvent) {
-				mouse = event.touches[t];
+				mouse = event.changedTouches[t];
 				inputid = mouse.identifier;
 			}
 
@@ -116,7 +116,6 @@ var xgui = function ( p ) {
 					if (o.name == "ColorPicker2") {
 						var m = canvas.relMouseCoords(mouse);
 						//var m = {x: mouse.clientX - mouse.target.offsetLeft, y: mouse.clientY - mouse.target.offsetTop};
-						
 						o.mouseMove(m.x-o.x,m.y-o.y);
 					}
 				}
