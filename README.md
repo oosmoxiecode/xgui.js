@@ -36,6 +36,7 @@ This code creates a "xgui" and adds it to the document.body, makes a HSlider, bi
 So when you drag the slider testObject.x and testObject.y will be set to the value of the slider.
 
 More examples to come. For now look in */examples/testbed.html* and */examples/testbed_touch.html* for some idea of how to use it.
+Some examples where I used it: [Dragon Curve](http://oos.moxiecode.com/js_canvas/dragoncurve/), [Balls Box2d](http://oos.moxiecode.com/js_canvas/balls_box2d/), [Drum machine](http://oos.moxiecode.com/js_webgl/drum_machine_webaudio/)
 
 Inspiration came from similar stuff for OpenFrameworks, like [this](http://forum.openframeworks.cc/t/different-guis-for-openframeworks/4376).
 
