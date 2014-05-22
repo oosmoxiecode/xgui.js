@@ -1971,6 +1971,110 @@ var xgui = function ( p ) {
 		this.value2.updateBind(true);		
 	}	
 
+	/*
+	 * CircularSlider
+	 */
+
+	this.CircularSlider = function ( p ) {
+		Base.call( this, p );
+
+		this.name = "CircularSlider";
+		this.radius = p.radius || 25;
+		this.innerRadius = p.innerRadius || this.radius - 10;
+		this.centerx = this.x+this.radius;
+		this.centery = this.y+this.radius;
+		this.width = this.radius*2;
+		this.height = this.radius*2;
+		this.min = p.min || 0;
+		this.max = p.max || 100;
+		this.range = this.max - this.min;
+		this.value = new Value(p.value || 0);
+		this.rotationValue = this.getRotationValue();
+		this.lastRotationValue = this.rotationValue;
+		this.decimals = p.decimals || 0;
+		this.draw();
+	}
+
+	this.CircularSlider.prototype = new Base(); 
+	this.CircularSlider.prototype.constructor = this.CircularSlider;
+
+	this.CircularSlider.prototype.getRotationValue = function() {
+		var range = Math.PI*2;
+
+		var percent = (this.value.v - this.min)/(this.max - this.min);
+
+		var value = (percent*range);
+
+		return value;
+	}
+
+	this.CircularSlider.prototype.draw = function() {
+		if (this.value.v < this.min) this.value.v = this.min;
+		if (this.value.v > this.max) this.value.v = this.max;
+
+		context.clearRect(this.x,this.y,this.width,this.height);
+		//draw background circle
+		context.fillStyle = bgColor;
+		context.beginPath();
+		context.arc(this.centerx, this.centery, this.radius, -Math.PI*0.5, Math.PI*1.5, false); 
+		context.closePath();
+		context.fill();
+
+		// draw foreground circle
+		context.fillStyle = frontColor;
+		context.beginPath();
+		context.moveTo(this.centerx, this.centery);
+		context.lineTo(this.centerx, this.centery-this.radius);
+		context.arc(this.centerx, this.centery, this.radius, -Math.PI*0.5, this.rotationValue-Math.PI*0.5, false); 
+		context.closePath();
+		context.fill();
+
+		// clear center
+		context.globalCompositeOperation = "destination-out";
+		context.beginPath();
+		context.arc(this.centerx, this.centery, this.innerRadius, -Math.PI*0.5, Math.PI*1.5, false); 
+		context.closePath();
+		context.fill();		
+		context.globalCompositeOperation = "source-over";
+
+		// label
+		context.fillStyle = bgColor;
+		context.font = font;
+		context.textBaseline = "alphabetic";
+		context.textAlign = "center";
+		context.fillText(this.value.v.toFixed(this.decimals), this.centerx, this.centery+4);
+	}
+
+	this.CircularSlider.prototype.mouseDown = function(x,y) {
+
+	    var dx = this.radius - x;
+	    var dy = this.radius - y;
+	    this.rotationValue = Math.atan2(dy, dx) - Math.PI*0.5;
+
+		var range = Math.PI*2;
+		this.rotationValue = (((this.rotationValue%range)+range)%range);
+
+		// too much dif, use old value
+		var dif = Math.abs(this.rotationValue - this.lastRotationValue);
+		if (dif > Math.PI) {
+			this.rotationValue = this.lastRotationValue;
+		}
+		
+		var steps = 1/range;
+		var value = (this.rotationValue)*steps;
+
+		this.value.v = (this.range*value)+this.min;
+		
+		this.draw();
+		this.value.updateBind();
+
+		this.lastRotationValue = this.rotationValue;
+	
+	}
+
+	this.CircularSlider.prototype.mouseUp = function() {
+		this.value.updateBind(true);
+	}
 
 	/*
 	 * Label
@@ -2102,6 +2206,7 @@ var xgui = function ( p ) {
 		Matrix: this.Matrix,
 		RangeSlider: this.RangeSlider,
 		Joystick: this.Joystick,
+		CircularSlider: this.CircularSlider,
 		update: this.update,
 		onResize: this.onResize,
 		disableEvents: this.disableEvents,
