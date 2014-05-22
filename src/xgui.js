@@ -7,10 +7,10 @@ var xgui = function ( p ) {
 	if (p == undefined) p = {};
 
 	var container, canvas, context;
+	var containerId = p.id || "xgui_container";
 	var pool = [];
 	var mouseDownMap = {}; // hashmap for touch events, indexed by unique ids
 	var mouseHitIdMap = {};
-	var mouseHitCanvas = true;
 	var bgColor = p.backgroundColor || "rgb(100, 100, 100)";
 	var frontColor = p.frontColor || "rgb(230, 230, 230)";
 	var dimColor = p.dimColor || "rgb(140, 140, 140)";
@@ -29,7 +29,7 @@ var xgui = function ( p ) {
 	container.style.position = p.position || "relative";
 	container.style.width = ""+this.width+"px";
 	container.style.height = ""+this.height+"px";
-	container.setAttribute("id", p.id || "xgui_container");
+	container.setAttribute("id", containerId);
 
 	canvas = document.createElement("canvas");
 	canvas.width = this.width;
@@ -114,7 +114,7 @@ var xgui = function ( p ) {
 				if (mouseHitIdMap[inputid] != null) {
 					var o = pool[mouseHitIdMap[inputid]];
 					if (o.name == "ColorPicker2") {
-						var m = canvas.relMouseCoords(mouse);
+						var m = canvas.relativeMouseCoords(mouse);
 						//var m = {x: mouse.clientX - mouse.target.offsetLeft, y: mouse.clientY - mouse.target.offsetTop};
 						o.mouseMove(m.x-o.x,m.y-o.y);
 					}
@@ -122,7 +122,7 @@ var xgui = function ( p ) {
 				return;
 			}
 
-			var m = canvas.relMouseCoords(mouse);
+			var m = canvas.relativeMouseCoords(mouse);
 			//var m = {x: mouse.clientX - mouse.target.offsetLeft, y: mouse.clientY - mouse.target.offsetTop};
 			var o = pool[mouseHitIdMap[inputid]];
 
@@ -165,7 +165,7 @@ var xgui = function ( p ) {
 				}
 			}
 
-			var m = canvas.relMouseCoords(mouse);
+			var m = canvas.relativeMouseCoords(mouse);
 			//var m = {x: mouse.clientX - mouse.target.offsetLeft, y: mouse.clientY - mouse.target.offsetTop};
 
 			for (var i=0; i<pool.length; ++i ) {
@@ -2021,6 +2021,22 @@ var xgui = function ( p ) {
 
 	}
 
+	this.dispose = function () {
+		
+		this.disableEvents();
+
+		pool.length = 0;
+		container.removeChild(canvas);
+		container.innerHTML = "";
+
+		document.getElementById(containerId).parentNode.removeChild(container);
+
+		for (var i in this) {
+			delete this[i];
+		}
+
+	}
+
 	this.update = function () {
 		time = Date.now();
 		delta = time - oldTime;
@@ -2090,6 +2106,7 @@ var xgui = function ( p ) {
 		onResize: this.onResize,
 		disableEvents: this.disableEvents,
 		enableEvents: this.enableEvents,
+		dispose: this.dispose
 
 	};
 
@@ -2107,7 +2124,7 @@ function colorToHex(c) {
 	return m ? (1 << 24 | m[1] << 16 | m[2] << 8 | m[3]).toString(16).substr(1) : c;
 }
 
-HTMLCanvasElement.prototype.relMouseCoords = function (event) {
+HTMLCanvasElement.prototype.relativeMouseCoords = function (event) {
 	var totalOffsetX = 0;
 	var totalOffsetY = 0;
 	var canvasX = 0;
