@@ -2075,6 +2075,106 @@ var xgui = function ( p ) {
 	}
 
 	/*
+	 * Scrollwheel
+	 */
+
+	this.Scrollwheel = function ( p ) {
+		Base.call( this, p );
+
+		this.name = "Scrollwheel";
+		this.width = p.width || 20;
+		this.height = p.height || 80;
+		this.centerx = this.x+this.width*0.5;
+		this.centery = this.y+this.height*0.5;
+		this.min = p.min || -1;
+		this.max = p.max || 1;
+		this.range = this.max - this.min;
+		this.value = new Value(p.value || 0);
+		this.lastValue = this.value.v;
+		this.decimals = p.decimals || 2;
+
+		// make a pattern
+		this.pattern = document.createElement("canvas");
+		this.pattern.width = this.width;
+		this.pattern.height = this.height*3;
+		var patternContext = this.pattern.getContext('2d');
+		var colors = [frontColor, dimColor];
+		for (var i = 0; i < this.pattern.height; i+=2) {
+			patternContext.fillStyle = colors[(i*0.5)%2];
+			patternContext.fillRect(0,i,128,2);
+		}
+
+		this.mouseStartY = null;
+		this.mouseOffsetY = 0;
+		this.offsetY = 0;
+
+		this.draw();
+	}
+
+	this.Scrollwheel.prototype = new Base(); 
+	this.Scrollwheel.prototype.constructor = this.Scrollwheel;
+
+
+	this.Scrollwheel.prototype.draw = function() {
+		if (this.value.v < this.min) this.value.v = this.min;
+		if (this.value.v > this.max) this.value.v = this.max;
+
+		// normalize
+		this.offsetY += (this.mouseOffsetY - this.offsetY)/10;
+
+		context.clearRect(this.x,this.y,this.width,this.height);
+		// background
+		context.fillStyle = bgColor;
+		context.fillRect(this.x,this.y,this.width,this.height);
+		// pattern
+		context.save();
+		context.beginPath();
+		context.rect(this.x+2,this.y+2,this.width-4,this.height-4);
+		context.clip();
+		context.drawImage(this.pattern, this.x, this.y-this.height+this.offsetY);
+		context.restore();
+		// cover gradient
+		var gradient = context.createLinearGradient(this.x,this.y,this.x,this.y+this.height);
+		gradient.addColorStop(0, "rgba(0,0,0,0.7)");		
+		gradient.addColorStop(0.4, "rgba(0,0,0,0)");
+		gradient.addColorStop(0.6, "rgba(0,0,0,0)");
+		gradient.addColorStop(1, "rgba(0,0,0,0.7)");
+		context.fillStyle = gradient;
+		context.fillRect(this.x,this.y,this.width,this.height);
+
+		// update value
+		var percent = ((this.offsetY+this.height)/(this.height*2));
+		this.value.v = ((this.range*percent)+this.min).toFixed(this.decimals);
+		if (this.value.v != this.lastValue) {
+			this.value.updateBind();
+		}
+		this.lastValue = this.value.v;
+
+	}
+
+	this.Scrollwheel.prototype.mouseDown = function(x,y) {
+
+		if (this.mouseStartY == null) {
+			this.mouseStartY = y;
+		}
+
+		this.mouseOffsetY = y - this.mouseStartY;
+
+		if (this.mouseOffsetY > this.height) this.mouseOffsetY = this.height;
+		if (this.mouseOffsetY < -this.height) this.mouseOffsetY = -this.height;
+
+		this.draw();
+	
+	}
+
+	this.Scrollwheel.prototype.mouseUp = function() {
+		this.mouseStartY = null;
+		this.mouseOffsetY = 0;
+		this.value.updateBind(true);
+	}
+
+
+	/*
 	 * Label
 	 */
 
@@ -2147,8 +2247,8 @@ var xgui = function ( p ) {
 		for (var i=0; i<pool.length; ++i ) {
 			var o = pool[i];
 
-			// special joystick case
-			if (o.name == "Joystick") {
+			// special Joystick and Scrollwheel case
+			if (o.name == "Joystick" || o.name == "Scrollwheel") {
 				o.draw( true );
 				continue;
 			}
@@ -2205,6 +2305,7 @@ var xgui = function ( p ) {
 		RangeSlider: this.RangeSlider,
 		Joystick: this.Joystick,
 		CircularSlider: this.CircularSlider,
+		Scrollwheel: this.Scrollwheel,
 		update: this.update,
 		onResize: this.onResize,
 		disableEvents: this.disableEvents,
