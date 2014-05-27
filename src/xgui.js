@@ -1896,6 +1896,7 @@ var xgui = function ( p ) {
 		this.laststicky = -1;		
 		this.maxDistance = this.radius - this.innerRadius - 5;
 		this.mouseIsDown = false;
+		this.doUpdate = false;
 		this.draw();
 	}
 
@@ -1911,8 +1912,11 @@ var xgui = function ( p ) {
 		}
 
 		if (this.stickx.toFixed(2) == this.laststickx.toFixed(2) && this.sticky.toFixed(2) == this.laststicky.toFixed(2) && updateCalling) {
+			this.doUpdate = false;
 			return;
 		}
+
+		this.doUpdate = true;
 		
 		this.value1.v = this.stickx/this.maxDistance;
 		this.value2.v = this.sticky/this.maxDistance;
@@ -1997,6 +2001,7 @@ var xgui = function ( p ) {
 
 	this.Joystick.prototype.mouseUp = function() {
 		this.mouseIsDown = false;
+		this.doUpdate = true;
 		this.value1.updateBind(true);
 		this.value2.updateBind(true);		
 	}	
@@ -2140,6 +2145,7 @@ var xgui = function ( p ) {
 		this.mouseOffsetY = 0;
 		this.offsetY = 0;
 
+		this.doUpdate = true;
 		this.draw();
 	}
 
@@ -2179,6 +2185,9 @@ var xgui = function ( p ) {
 		this.value.v = ((this.range*percent)+this.min).toFixed(this.decimals);
 		if (this.value.v != this.lastValue) {
 			this.value.updateBind();
+			this.doUpdate = true;
+		} else {
+			this.doUpdate = false;
 		}
 		this.lastValue = this.value.v;
 
@@ -2202,6 +2211,7 @@ var xgui = function ( p ) {
 	this.Scrollwheel.prototype.mouseUp = function() {
 		this.mouseStartY = null;
 		this.mouseOffsetY = 0;
+		this.doUpdate = true;
 		this.value.updateBind(true);
 	}
 
@@ -2281,7 +2291,9 @@ var xgui = function ( p ) {
 
 			// special Joystick and Scrollwheel case
 			if (o.name == "Joystick" || o.name == "Scrollwheel") {
-				o.draw( true );
+				if (o.doUpdate) {
+					o.draw( true );
+				}
 				continue;
 			}
 
