@@ -30,6 +30,8 @@ var xgui = function ( p ) {
 	container.style.width = ""+this.width+"px";
 	container.style.height = ""+this.height+"px";
 	container.setAttribute("id", containerId);
+	container.style.touchAction = "none";
+	//touch-action: none;
 
 	canvas = document.createElement("canvas");
 	canvas.width = this.width;
@@ -561,11 +563,11 @@ var xgui = function ( p ) {
 		this.dropdown.style.fontSize = "10px";
 		this.dropdown.style.outlineStyle = "none"
 		this.dropdown.style.color = bgColor;
-		this.dropdown.style.webkitAppearance = "none";
-		this.dropdown.style.webkitBorderRadius = "0px";
+		//this.dropdown.style.webkitAppearance = "none";
+		//this.dropdown.style.webkitBorderRadius = "0px";
 		this.dropdown.style.background = "rgba(0,0,0,0)";//"transparent";
 		this.dropdown.style.borderStyle = "solid";
-		this.dropdown.style.width = "119px";
+		this.dropdown.style.width = "121px";
 		this.dropdown.style.height = "16px";
 		this.dropdown.style.textIndent = "0px";
 		this.dropdown.style.borderLeftColor = bgColor;
