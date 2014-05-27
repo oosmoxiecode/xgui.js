@@ -52,6 +52,11 @@ var xgui = function ( p ) {
 		container.removeEventListener( 'mousedown', mouseDown, false );
 		document.removeEventListener( 'mouseup', mouseUp, false );
 
+		// ie events
+		document.addEventListener( 'MSPointerMove', touchMove, false );
+		container.addEventListener( 'MSPointerDown', touchStart, false );
+		document.addEventListener( 'MSPointerUp', touchEnd, false );
+
 	}
 
 	this.enableEvents = function () {
@@ -65,6 +70,11 @@ var xgui = function ( p ) {
 		document.addEventListener( 'mousemove', mouseMove, false );
 		container.addEventListener( 'mousedown', mouseDown, false );
 		document.addEventListener( 'mouseup', mouseUp, false );
+
+		// ie events
+		document.addEventListener( 'MSPointerMove', touchMove, false );
+		container.addEventListener( 'MSPointerDown', touchStart, false );
+		document.addEventListener( 'MSPointerUp', touchEnd, false );
 
 	}
 
@@ -103,13 +113,20 @@ var xgui = function ( p ) {
 
 		var loopNum = 1;
 		var inputid = 0;
+
+		// ie hack
+		if (isTouchEvent && typeof event.changedTouches == "undefined") {
+			event.changedTouches = [event];
+		}
+
 		if (isTouchEvent) loopNum = event.changedTouches.length;
 
 		for (var t = 0; t < loopNum; t++) {
 
 			if (isTouchEvent) {
 				mouse = event.changedTouches[t];
-				inputid = mouse.identifier;
+				//inputid = mouse.identifier;
+				inputid = (typeof mouse.identifier != "undefined") ? mouse.identifier : (typeof mouse.pointerId != "undefined") ? mouse.pointerId : 0;
 			}
 
 			if (!mouseDownMap[inputid]) {
@@ -145,13 +162,20 @@ var xgui = function ( p ) {
 
 		var loopNum = 1;
 		var inputid = 0;
+
+		// ie hack
+		if (isTouchEvent && typeof event.changedTouches == "undefined") {
+			event.changedTouches = [event];
+		}
+
 		if (isTouchEvent) loopNum = event.changedTouches.length;
 
 		for (var t = 0; t < loopNum; t++) {
 
 			if (isTouchEvent) {
-				inputid = event.changedTouches[t].identifier;
 				mouse = event.changedTouches[t];
+				//inputid = mouse.identifier;
+				inputid = (typeof mouse.identifier != "undefined") ? mouse.identifier : (typeof mouse.pointerId != "undefined") ? mouse.pointerId : 0;
 			}
 
 			var poolId = mouseHitIdMap[inputid];
@@ -198,12 +222,18 @@ var xgui = function ( p ) {
 		
 		var inputid = 0;
 
+		// ie hack
+		if (isTouchEvent && typeof event.changedTouches == "undefined") {
+			event.changedTouches = [event];
+		}
+
 		if (isTouchEvent) {
 
 			var touches = event.changedTouches;
 			for (var i=0; i<touches.length; i++) {
 
-				inputid = touches[i].identifier;
+				//inputid = touches[i].identifier;
+				inputid = (typeof touches[i].identifier != "undefined") ? touches[i].identifier : (typeof touches[i].pointerId != "undefined") ? touches[i].pointerId : 0;
 
 				mouseDownMap[inputid] = false;
 
