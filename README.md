@@ -5,9 +5,9 @@ Some simple gui stuff to try and make js experimentation a bit easier.
 
 The idea is to be able to quickly set up a bunch of sliders, knobs, colorPickers, etc. and bind the values of these to objects or functions.
 
-It gives you a bunch of gui stuff, like [these](http://oosmoxiecode.github.io/examples/xgui.js/testbed.html)(or a more touch friendly one [here](http://oosmoxiecode.github.com/examples/xgui.js/testbed_touch.html)):
+It gives you a bunch of gui stuff, like [these](http://oosmoxiecode.github.io/examples/xgui.js/testbed_touch.html) (old one [here](http://oosmoxiecode.github.com/examples/xgui.js/testbed.html)):
 
-[![example](http://oosmoxiecode.github.com/assets/xgui.png)](http://oosmoxiecode.github.com/examples/xgui.js/testbed.html)
+[![example](http://oosmoxiecode.github.com/assets/xgui.png)](http://oosmoxiecode.github.com/examples/xgui.js/testbed_touch.html)
 
 ### Basic usage ###
 
