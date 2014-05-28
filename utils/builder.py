@@ -1,6 +1,6 @@
 import os
 
-rev = 1
+rev = 2
 source = '../src/xgui.js'
 build = '../build/xgui.min.js'
 header = '// xgui.js r' + str( rev ) + ' - https://github.com/oosmoxiecode/xgui.js\n'
