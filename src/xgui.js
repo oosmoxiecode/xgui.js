@@ -492,12 +492,9 @@ var xgui = function ( p ) {
 	}
 
 	this.RangeSlider.prototype.getPositionFromValue = function(value) {
-		var steps = this.width/this.range;
-		var extra = Math.abs(this.min);
-		if (this.min > 0) extra = extra*-1;
-		var p = steps*(value+extra);
+		var percent = (value - this.min)/this.range;
+		return (percent*this.width);
 
-		return p;
 	}
 
 	this.RangeSlider.prototype.mouseDown = function(x,y) {
@@ -1090,19 +1087,13 @@ var xgui = function ( p ) {
 	}
 
 	this.TrackPad.prototype.getXPositionFromValue = function() {
-		var steps = this.width/this.range;
-		var extra = Math.abs(this.min);
-		if (this.min > 0) extra = extra*-1;
-		var p = steps*(this.value1.v+extra);
-		return p;
+		var percent = (this.value1.v - this.min)/this.range;
+		return (percent*this.width);
 	}
 
 	this.TrackPad.prototype.getYPositionFromValue = function() {
-		var steps = this.height/this.range;
-		var extra = Math.abs(this.min);
-		if (this.min > 0) extra = extra*-1;
-		var p = steps*(this.value2.v+extra);
-		return p;
+		var percent = (this.value2.v - this.min)/this.range;
+		return (percent*this.height);
 	}
 
 	this.TrackPad.prototype.mouseDown = function(x,y) {
@@ -1765,12 +1756,8 @@ var xgui = function ( p ) {
 	}
 
 	this.HSlider.prototype.getPositionFromValue = function() {
-		var steps = this.width/this.range;
-		var extra = Math.abs(this.min);
-		if (this.min > 0) extra = extra*-1;
-		var p = steps*(this.value.v+extra);
-
-		return p;
+		var percent = (this.value.v - this.min)/this.range;
+		return (percent*this.width);
 	}
 
 	this.HSlider.prototype.mouseDown = function(x,y) {
@@ -1859,11 +1846,8 @@ var xgui = function ( p ) {
 	}
 
 	this.VSlider.prototype.getPositionFromValue = function() {
-		var steps = this.height/this.range;
-		var extra = Math.abs(this.min);
-		if (this.min > 0) extra = extra*-1;
-		var p = steps*(this.value.v+extra);
-		return this.height-p;
+		var percent = (this.value.v - this.min)/this.range;
+		return this.height-(percent*this.height);
 	}
 
 	this.VSlider.prototype.mouseDown = function(x,y) {
