@@ -359,19 +359,25 @@ var xgui = function ( p ) {
 
 
 	this.Matrix.prototype.draw = function() {
-		context.clearRect(this.x,this.y,this.width,this.height);
+
+		context.save();
+		context.translate(this.x, this.y);
+
+		context.clearRect(0,0,this.width,this.height);
 		
 		for (var y=0; y<this.h; ++y ) {
 			for (var x=0; x<this.w; ++x ) {
 				context.fillStyle = bgColor;
-				context.fillRect(this.x+(x*this.size)+x,this.y+(y*this.size)+y,this.size,this.size);
+				context.fillRect((x*this.size)+x,(y*this.size)+y,this.size,this.size);
 				// selected?
 				if (this.value.v[y][x]) {
 					context.fillStyle = frontColor;
-					context.fillRect(this.x+(x*this.size)+x+2,this.y+(y*this.size)+y+2,this.size-4,this.size-4);
+					context.fillRect((x*this.size)+x+2,(y*this.size)+y+2,this.size-4,this.size-4);
 				}
 			}
-		}		
+		}	
+
+		context.restore();	
 	
 
 	}
@@ -430,9 +436,12 @@ var xgui = function ( p ) {
 		if (this.value1.v > this.value2.v) this.value1.v = this.value2.v;
 		if (this.value2.v < this.value1.v) this.value2.v = this.value1.v;
 
-		context.clearRect(this.x,this.y,this.width,this.height);
+		context.save();
+		context.translate(this.x, this.y);
+
+		//context.clearRect(0,0,this.width,this.height);
 		context.fillStyle = bgColor;
-		context.fillRect(this.x,this.y,this.width,this.height);
+		context.fillRect(0,0,this.width,this.height);
 
 		var addy = Math.round( Math.max(0, this.height - 11)*0.5 );
 
@@ -441,26 +450,25 @@ var xgui = function ( p ) {
 		context.font = font;
 		context.textBaseline = "alphabetic";
 		context.textAlign = "left";
-		context.fillText(this.value1.v.toFixed(this.decimals), this.x, this.y+9+addy);
+		context.fillText(this.value1.v.toFixed(this.decimals), 0, 9+addy);
 		// label 2:1
 		context.fillStyle = frontColor;
 		context.font = font;
 		context.textBaseline = "alphabetic";
 		context.textAlign = "right";
-		context.fillText(this.value2.v.toFixed(this.decimals), this.x+this.width-1, this.y+9+addy);
+		context.fillText(this.value2.v.toFixed(this.decimals), this.width-1, 9+addy);
 
 		context.fillStyle = frontColor;
 		var p1 = this.getPositionFromValue(this.value1.v);
 		var p2 = this.getPositionFromValue(this.value2.v);
 
-		context.fillRect(this.x+p1,this.y,p2-p1,this.height);
+		context.fillRect(p1,0,p2-p1,this.height);
 
-		context.save();
+		//context.save();
 
 		// mask
-		context.fillStyle = "transparent";
 		context.beginPath();
-		context.rect(this.x+p1,this.y,p2-p1,this.height);
+		context.rect(p1,0,p2-p1,this.height);
 		context.clip();
 
 		// label 1:2
@@ -468,13 +476,13 @@ var xgui = function ( p ) {
 		context.font = font;
 		context.textBaseline = "alphabetic";
 		context.textAlign = "left";
-		context.fillText(this.value1.v.toFixed(this.decimals), this.x, this.y+9+addy);
+		context.fillText(this.value1.v.toFixed(this.decimals), 0, 9+addy);
 		// label 2:2
 		context.fillStyle = bgColor;
 		context.font = font;
 		context.textBaseline = "alphabetic";
 		context.textAlign = "right";
-		context.fillText(this.value2.v.toFixed(this.decimals), this.x+this.width-1, this.y+9+addy);
+		context.fillText(this.value2.v.toFixed(this.decimals), this.width-1, 9+addy);
 
 		context.restore();
 		
@@ -737,36 +745,41 @@ var xgui = function ( p ) {
 		if (this.value.v < this.min) this.value.v = this.min;
 		if (this.value.v > this.max) this.value.v = this.max;
 
-		context.clearRect(this.x,this.y,this.width,this.height);
+		context.save();
+		context.translate(this.x, this.y);
+
+		//context.clearRect(0,0,this.width,this.height);
 		context.fillStyle = bgColor;
-		context.fillRect(this.x,this.y,this.width,this.height);
+		context.fillRect(0,0,this.width,this.height);
 		
 		var addy = Math.round( Math.max(0, this.height - 11)*0.5 );
 
 		// -
 		context.fillStyle = frontColor;
 		if (this.mouseDownMinus) context.fillStyle = bgColor;
-		context.fillRect(this.x+this.bx,this.y+1,10,this.height-2);
+		context.fillRect(this.bx,1,10,this.height-2);
 		context.fillStyle = bgColor;
 		if (this.mouseDownMinus) context.fillStyle = frontColor;
-		context.fillRect(this.x+this.bx+2,this.y+4+addy,6,2);
+		context.fillRect(this.bx+2,4+addy,6,2);
 
 		// +
 		context.fillStyle = frontColor;
 		if (this.mouseDownPlus) context.fillStyle = bgColor;
-		context.fillRect(this.x+this.bx+11,this.y+1,10,this.height-2);
+		context.fillRect(this.bx+11,1,10,this.height-2);
 		context.fillStyle = bgColor;
 		if (this.mouseDownPlus) context.fillStyle = frontColor;
-		context.fillRect(this.x+this.bx+13,this.y+4+addy,6,2);
-		context.fillRect(this.x+this.bx+15,this.y+2+addy,2,6);
+		context.fillRect(this.bx+13,4+addy,6,2);
+		context.fillRect(this.bx+15,2+addy,2,6);
 
 		// label
 		context.fillStyle = frontColor;
 		context.font = font;
 		context.textBaseline = "alphabetic";
 		context.textAlign = "center";
-		context.fillText(this.value.v.toFixed(this.decimals), this.x+this.bx/2, this.y+9+addy);
+		context.fillText(this.value.v.toFixed(this.decimals), this.bx/2, 9+addy);
 		
+		context.restore();
+
 	}
 
 
@@ -844,7 +857,7 @@ var xgui = function ( p ) {
 		// get old
 		var old = context.getImageData(this.x, this.y, this.width, this.height);
 		
-		context.clearRect(this.x,this.y,this.width,this.height);
+		//context.clearRect(this.x,this.y,this.width,this.height);
 
 		// frame
 		context.strokeStyle = bgColor;
@@ -858,7 +871,6 @@ var xgui = function ( p ) {
 		context.save();
 
 		// mask
-		context.fillStyle = "transparent";
 		context.beginPath();
 		context.rect(this.x,this.y,this.width,this.height);
 		context.clip();
@@ -958,16 +970,20 @@ var xgui = function ( p ) {
 	this.Button.prototype.constructor = this.Button;
 
 	this.Button.prototype.draw = function() {
-		context.clearRect(this.x,this.y,this.width,this.height);
+
+		context.save();
+		context.translate(this.x, this.y);
+
+		//context.clearRect(0,0,this.width,this.height);
 
 		// frame
 		context.strokeStyle = bgColor;
 		context.lineWidth = 2.0;
-		context.strokeRect(this.x, this.y, this.width, this.height);
+		context.strokeRect(0, 0, this.width, this.height);
 		
 		context.fillStyle = frontColor;
 		if (this.mouseIsDown) context.fillStyle = dimColor;
-		context.fillRect(this.x, this.y, this.width, this.height);
+		context.fillRect(0, 0, this.width, this.height);
 
 		// label
 		var addy = Math.round( Math.max(0, this.height - 14)*0.5 );
@@ -977,9 +993,11 @@ var xgui = function ( p ) {
 		context.font = font;
 		context.textBaseline = "alphabetic";
 		context.textAlign = "left";
-		context.fillText(this.text, this.x+4, this.y+11+addy);
+		context.fillText(this.text, 4, 11+addy);
 		var labelWidth = context.measureText(this.text);
 		this.width = Math.round( this.fullWidth + labelWidth.width ) + 9;
+
+		context.restore();
 
 	}
 
@@ -1027,29 +1045,32 @@ var xgui = function ( p ) {
 		if (this.value2.v < this.min) this.value2.v = this.min; 
 		if (this.value2.v > this.max) this.value2.v = this.max;
 
-		context.clearRect(this.x-1,this.y,this.width,this.height+14);
+		context.save();
+		context.translate(this.x, this.y);
+
+		context.clearRect(-1,0,this.width,this.height+14);
 
 		// frame
 		context.strokeStyle = bgColor;
 		context.lineWidth = 2.0;
-		context.strokeRect(this.x, this.y, this.width, this.height);
+		context.strokeRect(0, 0, this.width, this.height);
 		
 		context.fillStyle = frontColor;
-		context.fillRect(this.x, this.y, this.width, this.height);
+		context.fillRect(0, 0, this.width, this.height);
 
 		// horizontal line
 		context.strokeStyle = dimColor;
 		context.lineWidth = 1.0;
 		context.beginPath();
-		context.moveTo(this.x, 0.5+this.y+this.height/2);
-		context.lineTo(this.x+this.width, 0.5+this.y+this.height/2);
+		context.moveTo(0, 0.5+this.height/2);
+		context.lineTo(0+this.width, 0.5+this.height/2);
 		context.closePath();
 		context.stroke();
 
 		// vertical line
 		context.beginPath();
-		context.moveTo(0.5+this.x+this.width/2, this.y);
-		context.lineTo(0.5+this.x+this.width/2, this.y+this.height);
+		context.moveTo(0.5+this.width/2, 0);
+		context.lineTo(0.5+this.width/2, this.height);
 		context.closePath();
 		context.stroke();
 
@@ -1065,14 +1086,16 @@ var xgui = function ( p ) {
 
 		// point
 		context.fillStyle = dimColor;
-		context.fillRect(this.x+x-half, this.y+y-half, this.size, this.size);
+		context.fillRect(x-half, y-half, this.size, this.size);
 
 		// label
 		context.fillStyle = bgColor;
 		context.font = fontsm;
 		context.textBaseline = "alphabetic";
 		context.textAlign = "left";
-		context.fillText("X: "+this.value1.v.toFixed(2)+" Y: "+this.value2.v.toFixed(2), this.x, this.y+this.height+9);
+		context.fillText("X: "+this.value1.v.toFixed(2)+" Y: "+this.value2.v.toFixed(2), 0, this.height+9);
+
+		context.restore();
 
 	}
 
@@ -1135,15 +1158,18 @@ var xgui = function ( p ) {
 	this.ColorPicker.prototype.constructor = this.ColorPicker;
 
 	this.ColorPicker.prototype.draw = function() {
-		context.clearRect(this.x,this.y,this.width,this.height+this.frameheight+4);
+		context.save();
+		context.translate(this.x, this.y);		
+
+		context.clearRect(0,0,this.width,this.height+this.frameheight+4);
 
 		// frame
 		context.strokeStyle = bgColor;
 		context.lineWidth = 2.0;
-		context.strokeRect(this.x, this.y, this.width, this.height);
+		context.strokeRect(0, 0, this.width, this.height);
 		
 		// gradient colors
-		var gradient = context.createLinearGradient(this.x, this.y, this.x+this.width, this.y);
+		var gradient = context.createLinearGradient(0, 0, this.width, 0);
 		var offset = 1/6;
 		var index = 0;
 		gradient.addColorStop(offset*index++, "rgb(255, 0, 0)");	// red
@@ -1154,33 +1180,33 @@ var xgui = function ( p ) {
 		gradient.addColorStop(offset*index++, "rgb(255, 0, 255)");	// magenta
 		gradient.addColorStop(offset*index++, "rgb(255, 0, 0)");	// red
 		context.fillStyle = gradient;
-		context.fillRect(this.x, this.y, this.width, this.height);
+		context.fillRect(0, 0, this.width, this.height);
 
 		var onepixel = 1/(this.height/2);
 
 		// gradient white overlay
-		var gradient = context.createLinearGradient(this.x, this.y, this.x, this.y+(this.height/2));
+		var gradient = context.createLinearGradient(0, 0, 0, this.height/2);
 		gradient.addColorStop(0, "rgba(255, 255, 255, 1)");				// white
 		gradient.addColorStop(onepixel, "rgba(255, 255, 255, 1)");		// white
 		gradient.addColorStop(1, "rgba(255, 255, 255, 0)");				// alpha
 		context.fillStyle = gradient;
-		context.fillRect(this.x, this.y, this.width, (this.height/2));
+		context.fillRect(0, 0, this.width, (this.height/2));
 
 		// gradient black overlay
-		var gradient = context.createLinearGradient(this.x, this.y+(this.height/2), this.x, this.y+this.height);
+		var gradient = context.createLinearGradient(0, 0+(this.height/2), 0, this.height);
 		gradient.addColorStop(0, "rgba(0, 0, 0, 0)");			// alpha
 		gradient.addColorStop(1-onepixel, "rgba(0, 0, 0, 1)");	// black
 		gradient.addColorStop(1, "rgba(0, 0, 0, 1)");			// black
 		context.fillStyle = gradient;
-		context.fillRect(this.x, this.y+(this.height/2), this.width, (this.height/2));
+		context.fillRect(0, this.height/2, this.width, this.height/2);
 
 		// current color
 		context.strokeStyle = bgColor;
 		context.lineWidth = 2.0;
-		context.strokeRect(this.x, this.y+this.height+4, this.framewidth, this.frameheight);
+		context.strokeRect(0, this.height+4, this.framewidth, this.frameheight);
 		
 		context.fillStyle = "#"+this.value.v;
-		context.fillRect(this.x, this.y+this.height+4, this.framewidth, this.frameheight);
+		context.fillRect(0, this.height+4, this.framewidth, this.frameheight);
 
 		// label
 		var addy = Math.round( Math.max(0, this.frameheight - 10)*0.5 );
@@ -1189,7 +1215,9 @@ var xgui = function ( p ) {
 		context.font = font;
 		context.textBaseline = "alphabetic";
 		context.textAlign = "left";
-		context.fillText("#"+this.value.v.toUpperCase(), this.x+this.framewidth+4, this.y+this.height+13+addy);
+		context.fillText("#"+this.value.v.toUpperCase(), this.framewidth+4, this.height+13+addy);
+
+		context.restore()
 
 	}
 
@@ -1244,17 +1272,20 @@ var xgui = function ( p ) {
 
 	this.ColorPicker2.prototype.draw = function() {
 
-		context.clearRect(this.x-1,this.y-1,this.framewidth+60,this.height+3);
-		context.clearRect(this.x-1,this.y+this.frameheight,this.colorwidth+2,this.colorheight+3);
+		context.save();
+		context.translate(this.x, this.y);		
+
+		context.clearRect(-1,-1,this.framewidth+60,this.height+3);
+		context.clearRect(-1,this.frameheight,this.colorwidth+2,this.colorheight+3);
 
 		// frame
 		context.strokeStyle = bgColor;
 		context.lineWidth = 2.0;
-		context.strokeRect(this.x, this.y, this.framewidth, this.frameheight);	
+		context.strokeRect(0, 0, this.framewidth, this.frameheight);	
 
 		// current color
 		context.fillStyle = "#"+this.value.v;
-		context.fillRect(this.x, this.y, this.framewidth, this.frameheight);
+		context.fillRect(0, 0, this.framewidth, this.frameheight);
 
 		// label
 		var addy = Math.round( Math.max(0, this.frameheight - 11)*0.5 );
@@ -1263,17 +1294,17 @@ var xgui = function ( p ) {
 		context.font = font;
 		context.textBaseline = "alphabetic";
 		context.textAlign = "left";
-		context.fillText("#"+this.value.v.toUpperCase(), this.x+this.framewidth+4, this.y+9+addy);
+		context.fillText("#"+this.value.v.toUpperCase(), this.framewidth+4, 9+addy);
 
 		if (this.open) {
 			var extray = 1;
 			// frame
 			context.strokeStyle = bgColor;
 			context.lineWidth = 2.0;
-			context.strokeRect(this.x, this.y+this.frameheight+extray, this.colorwidth, this.colorheight);
+			context.strokeRect(0, this.frameheight+extray, this.colorwidth, this.colorheight);
 			
 			// gradient colors
-			var gradient = context.createLinearGradient(this.x, this.y+this.frameheight+extray, this.x+this.colorwidth, this.y+this.frameheight+extray);
+			var gradient = context.createLinearGradient(0, this.frameheight+extray, this.colorwidth, this.frameheight+extray);
 			var offset = 1/6;
 			var index = 0;
 			gradient.addColorStop(offset*index++, "rgb(255, 0, 0)");	// red
@@ -1284,26 +1315,28 @@ var xgui = function ( p ) {
 			gradient.addColorStop(offset*index++, "rgb(255, 0, 255)");	// magenta
 			gradient.addColorStop(offset*index++, "rgb(255, 0, 0)");	// red
 			context.fillStyle = gradient;
-			context.fillRect(this.x, this.y+this.frameheight+extray, this.colorwidth, this.colorheight);
+			context.fillRect(0, this.frameheight+extray, this.colorwidth, this.colorheight);
 
 			var onepixel = 1/(this.colorheight/2);
 
 			// gradient white overlay
-			var gradient = context.createLinearGradient(this.x, this.y+this.frameheight+extray, this.x, this.y+this.frameheight+extray+(this.colorheight/2));
+			var gradient = context.createLinearGradient(0, this.frameheight+extray, 0, this.frameheight+extray+(this.colorheight/2));
 			gradient.addColorStop(0, "rgba(255, 255, 255, 1)");				// white
 			gradient.addColorStop(onepixel, "rgba(255, 255, 255, 1)");		// white
 			gradient.addColorStop(1, "rgba(255, 255, 255, 0)");				// alpha
 			context.fillStyle = gradient;
-			context.fillRect(this.x, this.y+this.frameheight+extray, this.colorwidth, (this.colorheight/2));
+			context.fillRect(0, this.frameheight+extray, this.colorwidth, (this.colorheight/2));
 
 			// gradient black overlay
-			var gradient = context.createLinearGradient(this.x, this.y+this.frameheight+extray+(this.colorheight/2), this.x, this.y+this.frameheight+extray+this.colorheight);
+			var gradient = context.createLinearGradient(0, 0+this.frameheight+extray+(this.colorheight/2), 0, this.frameheight+extray+this.colorheight);
 			gradient.addColorStop(0, "rgba(0, 0, 0, 0)");			// alpha
 			gradient.addColorStop(1-onepixel, "rgba(0, 0, 0, 1)");	// black
 			gradient.addColorStop(1, "rgba(0, 0, 0, 1)");			// black
 			context.fillStyle = gradient;
-			context.fillRect(this.x, this.y+this.frameheight+extray+(this.colorheight/2), this.colorwidth, (this.colorheight/2));
+			context.fillRect(0, this.frameheight+extray+(this.colorheight/2), this.colorwidth, (this.colorheight/2));
 		}
+
+		context.restore();
 		
 	}
 
@@ -1448,18 +1481,21 @@ var xgui = function ( p ) {
 	this.ColorPicker3.prototype.constructor = this.ColorPicker3;
 
 	this.ColorPicker3.prototype.draw = function() {
-		context.clearRect(this.x-1,this.y-1,this.framewidth+60,this.height+3);
-		context.clearRect(this.x-1,this.y+this.frameheight,this.colorwidth+2,this.colorheight+3);
 
+		context.save();
+		context.translate(this.x, this.y);		
+
+		context.clearRect(-1,-1,this.framewidth+60,this.height+3);
+		context.clearRect(-1,this.frameheight,this.colorwidth+2,this.colorheight+3);
 
 		// frame
 		context.strokeStyle = bgColor;
 		context.lineWidth = 2.0;
-		context.strokeRect(this.x, this.y, this.framewidth, this.frameheight);	
+		context.strokeRect(0, 0, this.framewidth, this.frameheight);	
 
 		// current color
 		context.fillStyle = "#"+this.value.v;
-		context.fillRect(this.x, this.y, this.framewidth, this.frameheight);
+		context.fillRect(0, 0, this.framewidth, this.frameheight);
 
 		// label
 		var addy = Math.round( Math.max(0, this.frameheight - 11)*0.5 );
@@ -1468,7 +1504,7 @@ var xgui = function ( p ) {
 		context.font = font;
 		context.textBaseline = "alphabetic";
 		context.textAlign = "left";
-		context.fillText("#"+this.value.v.toUpperCase(), this.x+this.framewidth+4, this.y+9+addy);
+		context.fillText("#"+this.value.v.toUpperCase(), this.framewidth+4, 9+addy);
 
 		if (this.open) {
 			var extray = 1;
@@ -1483,10 +1519,10 @@ var xgui = function ( p ) {
 			for (var i = 0; i < this.palette.length; i++) {
 				
 				if (i == selected) selectedPosition = {x:x, y:y};
-				context.strokeRect(this.x+(x*this.size), this.y+this.frameheight+(y*this.size)+extray, this.size, this.size);	
+				context.strokeRect((x*this.size), this.frameheight+(y*this.size)+extray, this.size, this.size);	
 
 				context.fillStyle = "#"+this.palette[i];
-				context.fillRect(this.x+(x*this.size), this.y+this.frameheight+(y*this.size)+extray, this.size, this.size);
+				context.fillRect((x*this.size), this.frameheight+(y*this.size)+extray, this.size, this.size);
 
 				++x;
 				if (x >= this.maxWidth) {
@@ -1498,9 +1534,11 @@ var xgui = function ( p ) {
 
 			context.strokeStyle = "#ffffff";
 			context.lineWidth = 2.0;
-			context.strokeRect(this.x+(selectedPosition.x*this.size), this.y+this.frameheight+(selectedPosition.y*this.size)+extray, this.size, this.size);	
+			context.strokeRect((selectedPosition.x*this.size), this.frameheight+(selectedPosition.y*this.size)+extray, this.size, this.size);	
 
 		}
+
+		context.restore();
 
 	}
 
@@ -1613,8 +1651,8 @@ var xgui = function ( p ) {
 
 		this.name = "Knob";
 		this.radius = p.radius || 15;
-		this.centerx = this.x+this.radius;
-		this.centery = this.y+this.radius;
+		//this.centerx = this.x+this.radius;
+		//this.centery = this.y+this.radius;
 		this.width = this.radius*2;
 		this.height = this.radius*2;
 		this.min = p.min || 0;
@@ -1647,11 +1685,14 @@ var xgui = function ( p ) {
 		if (this.value.v < this.min) this.value.v = this.min;
 		if (this.value.v > this.max) this.value.v = this.max;
 
-		context.clearRect(this.x-4,this.y-4,this.width+8,this.height+13);
+		context.save();
+		context.translate(this.x, this.y);	
+
+		context.clearRect(-4,-4,this.width+8,this.height+13);
 		//draw a circle
 		context.fillStyle = bgColor;
 		context.beginPath();
-		context.arc(this.centerx, this.centery, this.radius, 0, Math.PI*2, false); 
+		context.arc(this.radius, this.radius, this.radius, 0, Math.PI*2, false); 
 		context.closePath();
 		context.fill();
 
@@ -1664,10 +1705,10 @@ var xgui = function ( p ) {
 		context.lineWidth = 0.5;
 
 		for (var i=0; i<=this.radius; ++i ) {
-			var startx = this.centerx + Math.sin(startangle-(step*i))*(this.radius+1);
-			var starty = this.centery + Math.cos(startangle-(step*i))*(this.radius+1);
-			var endx = this.centerx + Math.sin(startangle-(step*i))*(this.radius+4);
-			var endy = this.centery + Math.cos(startangle-(step*i))*(this.radius+4);
+			var startx = this.radius + Math.sin(startangle-(step*i))*(this.radius+1);
+			var starty = this.radius + Math.cos(startangle-(step*i))*(this.radius+1);
+			var endx = this.radius + Math.sin(startangle-(step*i))*(this.radius+4);
+			var endy = this.radius + Math.cos(startangle-(step*i))*(this.radius+4);
 
 			context.beginPath();
 			context.moveTo(startx, starty);
@@ -1678,13 +1719,13 @@ var xgui = function ( p ) {
 		}
 
 		// line
-		var linex = this.centerx + Math.cos(this.rotationValue - Math.PI*0.5)*(this.radius);
-		var liney = this.centery + Math.sin(this.rotationValue - Math.PI*0.5)*(this.radius);
+		var linex = this.radius + Math.cos(this.rotationValue - Math.PI*0.5)*(this.radius);
+		var liney = this.radius + Math.sin(this.rotationValue - Math.PI*0.5)*(this.radius);
 
 		context.strokeStyle = frontColor;
 		context.lineWidth = 2.0;
 		context.beginPath();
-		context.moveTo(this.centerx, this.centery);
+		context.moveTo(this.radius, this.radius);
 		context.lineTo(linex, liney);
 		context.closePath();
 		context.stroke();
@@ -1694,7 +1735,9 @@ var xgui = function ( p ) {
 		context.font = fontsm;
 		context.textBaseline = "alphabetic";
 		context.textAlign = "center";
-		context.fillText(this.value.v.toFixed(this.decimals), this.centerx, this.centery+this.radius+7);
+		context.fillText(this.value.v.toFixed(this.decimals), this.radius, (this.radius*2)+7);
+
+		context.restore();
 	}
 
 	this.Knob.prototype.mouseDown = function(x,y) {
@@ -1749,15 +1792,19 @@ var xgui = function ( p ) {
 	this.CheckBox.prototype.constructor = this.CheckBox;
 
 	this.CheckBox.prototype.draw = function() {
-		context.clearRect(this.x,this.y,this.width,this.height);
+		
+		context.save();
+		context.translate(this.x, this.y);	
+
+		context.clearRect(0,0,this.width,this.height);
 		context.fillStyle = bgColor;
-		context.fillRect(this.x,this.y,this.fullWidth,this.height);
+		context.fillRect(0,0,this.fullWidth,this.height);
 		if (this.value.v) {
 			context.fillStyle = frontColor;
 		} else {
 			context.fillStyle = bgColor;
 		}
-		context.fillRect(this.x+2,this.y+2,this.fullWidth-4,this.height-4);		
+		context.fillRect(2,2,this.fullWidth-4,this.height-4);		
 
 		// label
 		var addy = Math.round( Math.max(0, this.height - 11)*0.5 );
@@ -1766,9 +1813,11 @@ var xgui = function ( p ) {
 		context.font = font;
 		context.textBaseline = "alphabetic";
 		context.textAlign = "left";
-		context.fillText(this.text, this.x+this.fullWidth+2, this.y+9+addy);
+		context.fillText(this.text, this.fullWidth+2, 9+addy);
 		var labelWidth = context.measureText(this.text);
 		this.width = this.fullWidth + labelWidth.width + 3;
+
+		context.restore();
 	}
 
 	this.CheckBox.prototype.mouseDown = function() {
@@ -1837,15 +1886,18 @@ var xgui = function ( p ) {
 	this.RadioButton.prototype.constructor = this.RadioButton;
 
 	this.RadioButton.prototype.draw = function() {
-		context.clearRect(this.x,this.y,this.width,this.height);
+		context.save();
+		context.translate(this.x, this.y);	
+
+		context.clearRect(0,0,this.width,this.height);
 		context.fillStyle = bgColor;
-		context.fillRect(this.x,this.y,this.fullWidth,this.height);
+		context.fillRect(0,0,this.fullWidth,this.height);
 		if (this.value.v) {
 			context.fillStyle = frontColor;
-			context.fillRect((this.x+this.fullWidth/2)+1,this.y+2,(this.fullWidth/2)-3,this.height-4);
+			context.fillRect((this.fullWidth/2)+1,2,(this.fullWidth/2)-3,this.height-4);
 		} else {
 			context.fillStyle = dimColor;
-			context.fillRect(this.x+2,this.y+2,(this.fullWidth/2)-3,this.height-4);		
+			context.fillRect(2,2,(this.fullWidth/2)-3,this.height-4);		
 		}
 		// label
 		var addy = Math.round( Math.max(0, this.height - 11)*0.5 );
@@ -1854,9 +1906,11 @@ var xgui = function ( p ) {
 		context.font = font;
 		context.textBaseline = "alphabetic";
 		context.textAlign = "left";
-		context.fillText(this.text, this.x+this.fullWidth+2, this.y+9+addy);
+		context.fillText(this.text, this.fullWidth+2, 9+addy);
 		var labelWidth = context.measureText(this.text);
 		this.width = this.fullWidth + labelWidth.width + 3;
+
+		context.restore();
 	}
 
 	this.RadioButton.prototype.mouseDown = function() {
@@ -1904,9 +1958,12 @@ var xgui = function ( p ) {
 		if (this.value.v > this.max) this.value.v = this.max;
 		if (this.value.v < this.min) this.value.v = this.min;
 
-		context.clearRect(this.x,this.y,this.width,this.height);
+		context.save();
+		context.translate(this.x, this.y);	
+
+		//context.clearRect(0,0,this.width,this.height);
 		context.fillStyle = bgColor;
-		context.fillRect(this.x,this.y,this.width,this.height);
+		context.fillRect(0,0,this.width,this.height);
 
 		var addy = Math.round( Math.max(0, this.height - 11)*0.5 );
 
@@ -1915,17 +1972,16 @@ var xgui = function ( p ) {
 		context.font = font;
 		context.textBaseline = "alphabetic";
 		context.textAlign = "left";
-		context.fillText(this.value.v.toFixed(this.decimals), this.x, this.y+9+addy);
+		context.fillText(this.value.v.toFixed(this.decimals), 0, 9+addy);
 
 		var p = this.getPositionFromValue();
 		context.fillStyle = frontColor;
-		context.fillRect(this.x,this.y,p,this.height);
+		context.fillRect(0,0,p,this.height);
 
-		context.save();
+		//context.save();
 
-		context.fillStyle = "transparent";
 		context.beginPath();
-		context.rect(this.x,this.y,p,this.height);
+		context.rect(0,0,p,this.height);
 		context.clip();
 		
 		// label2
@@ -1933,7 +1989,7 @@ var xgui = function ( p ) {
 		context.font = font;
 		context.textBaseline = "alphabetic";
 		context.textAlign = "left";
-		context.fillText(this.value.v.toFixed(this.decimals), this.x, this.y+9+addy);
+		context.fillText(this.value.v.toFixed(this.decimals), 0, 9+addy);
 
 		context.restore();
 		
@@ -1986,15 +2042,18 @@ var xgui = function ( p ) {
 		if (this.value.v > this.max) this.value.v = this.max;
 		if (this.value.v < this.min) this.value.v = this.min;
 
-		context.clearRect(this.x,this.y,this.width,this.height);
+		context.save();
+		context.translate(this.x, this.y);
+
+		//context.clearRect(0,0,this.width,this.height);
 		context.fillStyle = bgColor;
-		context.fillRect(this.x,this.y,this.width,this.height);
+		context.fillRect(0,0,this.width,this.height);
 
 		var addx = Math.round( Math.max(0, this.width - 11)*0.5 );
 
 		// label
 		context.save();
-		context.translate(this.x+9+addx, this.y+this.height-1);
+		context.translate(9+addx, this.height-1);
 		context.rotate(-Math.PI/2);
 		
 		context.fillStyle = frontColor;
@@ -2007,13 +2066,12 @@ var xgui = function ( p ) {
 
 		var p = this.getPositionFromValue();
 		context.fillStyle = frontColor;
-		context.fillRect(this.x,this.y+p,this.width,this.height-p);
+		context.fillRect(0,p,this.width,this.height-p);
 
-		context.save();
-		context.translate(this.x+9+addx, this.y+this.height-1);
+		//context.save();
+		context.translate(9+addx, this.height-1);
 		context.rotate(-Math.PI/2);
 
-		context.fillStyle = "transparent";
 		context.beginPath();
 		context.rect(-1,-this.width+1,this.height-p,this.width);
 		context.clip();
@@ -2061,8 +2119,8 @@ var xgui = function ( p ) {
 		this.value2 = new Value(0);
 		this.radius = p.radius || 50;
 		this.innerRadius = p.innerRadius || this.radius*0.65;
-		this.centerx = this.x+this.radius;
-		this.centery = this.y+this.radius;
+		//this.centerx = this.x+this.radius;
+		//this.centery = this.y+this.radius;
 		this.width = this.radius*2;
 		this.height = this.radius*2;
 		this.stickx = 0;
@@ -2096,18 +2154,21 @@ var xgui = function ( p ) {
 		this.value1.v = this.stickx/this.maxDistance;
 		this.value2.v = this.sticky/this.maxDistance;
 
-		context.clearRect(this.x-2,this.y-2,this.width+14,this.height+14);
+		context.save();
+		context.translate(this.x, this.y);
+
+		context.clearRect(-2,-2,this.width+14,this.height+14);
 
 		// ToDo: Move this gradient creation to the construct and use translate instead...
 
 		//draw outer circle
-		var gradient = context.createRadialGradient(this.centerx, this.centery, 0, this.centerx, this.centery, this.radius+5);
+		var gradient = context.createRadialGradient(this.radius, this.radius, 0, this.radius, this.radius, this.radius+5);
 		gradient.addColorStop(0, dimColor);		
 		gradient.addColorStop(0.8, frontColor);
 		gradient.addColorStop(1, dimColor);
 		context.fillStyle = gradient;
 		context.beginPath();
-		context.arc(this.centerx, this.centery, this.radius, 0, Math.PI*2, false); 
+		context.arc(this.radius, this.radius, this.radius, 0, Math.PI*2, false); 
 		context.closePath();
 		context.fill();
 
@@ -2117,38 +2178,40 @@ var xgui = function ( p ) {
 		var shadowaddx = (1-this.value1.v)*5;
 		var shadowaddy = (1-this.value2.v)*5;
 
-		var gradient = context.createRadialGradient(this.centerx+this.stickx+shadowaddx, this.centery+this.sticky+shadowaddy, 0, this.centerx+this.stickx+shadowaddx, this.centery+this.sticky+shadowaddy, this.innerRadius+10);
+		var gradient = context.createRadialGradient(this.radius+this.stickx+shadowaddx, this.radius+this.sticky+shadowaddy, 0, this.radius+this.stickx+shadowaddx, this.radius+this.sticky+shadowaddy, this.innerRadius+10);
 		gradient.addColorStop(0, 'rgba(0,0,0,1)');
 		gradient.addColorStop(1, 'rgba(0,0,0,0.00001)');
 		context.fillStyle = gradient;
 		context.beginPath();
-		context.arc(this.centerx+this.stickx+shadowaddx, this.centery+this.sticky+shadowaddy, this.innerRadius+10, 0, Math.PI*2, false); 
+		context.arc(this.radius+this.stickx+shadowaddx, this.radius+this.sticky+shadowaddy, this.innerRadius+10, 0, Math.PI*2, false); 
 		context.closePath();
 		context.fill();
 
 		// gradient + first circle
-		var gradient = context.createLinearGradient(this.centerx+this.stickx-this.innerRadius, this.centery+this.sticky-this.innerRadius, this.centerx+this.stickx-this.innerRadius, this.centery+this.sticky+this.innerRadius);
+		var gradient = context.createLinearGradient(this.radius+this.stickx-this.innerRadius, this.radius+this.sticky-this.innerRadius, this.radius+this.stickx-this.innerRadius, this.radius+this.sticky+this.innerRadius);
 		gradient.addColorStop(0, frontColor);
 		gradient.addColorStop(1, dimColor);
 		context.fillStyle = gradient;
 		context.beginPath();
-		context.arc(this.centerx+this.stickx, this.centery+this.sticky, this.innerRadius, 0, Math.PI*2, false); 
+		context.arc(this.radius+this.stickx, this.radius+this.sticky, this.innerRadius, 0, Math.PI*2, false); 
 		context.closePath();
 		context.fill();
 
 		// gradient + second circle
-		var gradient = context.createRadialGradient(this.centerx+this.stickx, this.centery+this.sticky, 0, this.centerx+this.stickx, this.centery+this.sticky, this.radius);
+		var gradient = context.createRadialGradient(this.radius+this.stickx, this.radius+this.sticky, 0, this.radius+this.stickx, this.radius+this.sticky, this.radius);
 		gradient.addColorStop(0, frontColor);
 		gradient.addColorStop(1, dimColor);
 		context.fillStyle = gradient;
 		context.beginPath();
-		context.arc(this.centerx+this.stickx, this.centery+this.sticky, this.innerRadius-4, 0, Math.PI*2, false); 
+		context.arc(this.radius+this.stickx, this.radius+this.sticky, this.innerRadius-4, 0, Math.PI*2, false); 
 		context.closePath();
 		context.fill();
 
 
 		this.laststickx = this.stickx;
-		this.laststicky = this.sticky;		
+		this.laststicky = this.sticky;	
+
+		context.restore();	
 
 	}
 
@@ -2191,8 +2254,8 @@ var xgui = function ( p ) {
 		this.name = "CircularSlider";
 		this.radius = p.radius || 25;
 		this.innerRadius = p.innerRadius || this.radius - 10;
-		this.centerx = this.x+this.radius;
-		this.centery = this.y+this.radius;
+		//this.centerx = this.x+this.radius;
+		//this.centery = this.y+this.radius;
 		this.width = this.radius*2;
 		this.height = this.radius*2;
 		this.min = p.min || 0;
@@ -2222,27 +2285,30 @@ var xgui = function ( p ) {
 		if (this.value.v < this.min) this.value.v = this.min;
 		if (this.value.v > this.max) this.value.v = this.max;
 
-		context.clearRect(this.x,this.y,this.width,this.height);
+		context.save();
+		context.translate(this.x, this.y);
+
+		context.clearRect(0,0,this.width,this.height);
 		//draw background circle
 		context.fillStyle = bgColor;
 		context.beginPath();
-		context.arc(this.centerx, this.centery, this.radius, -Math.PI*0.5, Math.PI*1.5, false); 
+		context.arc(this.radius, this.radius, this.radius, -Math.PI*0.5, Math.PI*1.5, false); 
 		context.closePath();
 		context.fill();
 
 		// draw foreground circle
 		context.fillStyle = frontColor;
 		context.beginPath();
-		context.moveTo(this.centerx, this.centery);
-		context.lineTo(this.centerx, this.centery-this.radius);
-		context.arc(this.centerx, this.centery, this.radius, -Math.PI*0.5, this.rotationValue-Math.PI*0.5, false); 
+		context.moveTo(this.radius, this.radius);
+		context.lineTo(this.radius, 0);
+		context.arc(this.radius, this.radius, this.radius, -Math.PI*0.5, this.rotationValue-Math.PI*0.5, false); 
 		context.closePath();
 		context.fill();
 
 		// clear center
 		context.globalCompositeOperation = "destination-out";
 		context.beginPath();
-		context.arc(this.centerx, this.centery, this.innerRadius, -Math.PI*0.5, Math.PI*1.5, false); 
+		context.arc(this.radius, this.radius, this.innerRadius, -Math.PI*0.5, Math.PI*1.5, false); 
 		context.closePath();
 		context.fill();		
 		context.globalCompositeOperation = "source-over";
@@ -2252,7 +2318,9 @@ var xgui = function ( p ) {
 		context.font = font;
 		context.textBaseline = "alphabetic";
 		context.textAlign = "center";
-		context.fillText(this.value.v.toFixed(this.decimals), this.centerx, this.centery+4);
+		context.fillText(this.value.v.toFixed(this.decimals), this.radius, this.radius+4);
+
+		context.restore();
 	}
 
 	this.CircularSlider.prototype.mouseDown = function(x,y) {
@@ -2335,25 +2403,28 @@ var xgui = function ( p ) {
 		// normalize
 		this.offsetY += (this.mouseOffsetY - this.offsetY)/10;
 
-		context.clearRect(this.x,this.y,this.width,this.height);
+		context.save();
+		context.translate(this.x, this.y);
+
+		//context.clearRect(0,0,this.width,this.height);
 		// background
 		context.fillStyle = bgColor;
-		context.fillRect(this.x,this.y,this.width,this.height);
+		context.fillRect(0,0,this.width,this.height);
 		// pattern
 		context.save();
 		context.beginPath();
-		context.rect(this.x+2,this.y+2,this.width-4,this.height-4);
+		context.rect(2,2,this.width-4,this.height-4);
 		context.clip();
-		context.drawImage(this.pattern, this.x, this.y-this.height+this.offsetY);
+		context.drawImage(this.pattern, 0, -this.height+this.offsetY);
 		context.restore();
 		// cover gradient
-		var gradient = context.createLinearGradient(this.x,this.y,this.x,this.y+this.height);
+		var gradient = context.createLinearGradient(0,0,0,this.height);
 		gradient.addColorStop(0, "rgba(0,0,0,0.7)");		
 		gradient.addColorStop(0.4, "rgba(0,0,0,0)");
 		gradient.addColorStop(0.6, "rgba(0,0,0,0)");
 		gradient.addColorStop(1, "rgba(0,0,0,0.7)");
 		context.fillStyle = gradient;
-		context.fillRect(this.x,this.y,this.width,this.height);
+		context.fillRect(0,0,this.width,this.height);
 
 		// update value
 		var percent = ((this.offsetY+this.height)/(this.height*2));
@@ -2365,6 +2436,8 @@ var xgui = function ( p ) {
 			this.doUpdate = false;
 		}
 		this.lastValue = this.value.v;
+
+		context.restore();
 
 	}
 
