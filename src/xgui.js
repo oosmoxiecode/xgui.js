@@ -1471,6 +1471,7 @@ var xgui = function ( p ) {
 		this.lastTime = 0;
 		this.hex = this.palette[this.current];
 		this.oldColor = this.hex;
+		this.oldCurrent = this.current;
 		this.value = new Value(this.hex);
 		this.draw();
 
@@ -1513,12 +1514,12 @@ var xgui = function ( p ) {
 			var y = 0;
 
 			// selected one
-			var selected = this.palette.indexOf(this.hex);
+			//var selected = this.palette.indexOf(this.hex);
 			var selectedPosition = {}; 
 
 			for (var i = 0; i < this.palette.length; i++) {
 				
-				if (i == selected) selectedPosition = {x:x, y:y};
+				if (i == this.current) selectedPosition = {x:x, y:y};
 				context.strokeRect((x*this.size), this.frameheight+(y*this.size)+extray, this.size, this.size);	
 
 				context.fillStyle = "#"+this.palette[i];
@@ -1543,7 +1544,8 @@ var xgui = function ( p ) {
 	}
 
 	this.ColorPicker3.prototype.setOldColor = function() {
-		this.hex = this.oldColor;	
+		this.hex = this.oldColor;
+		this.current = this.oldCurrent;
 	}
 
 	this.ColorPicker3.prototype.mouseDown = function(x,y) {
@@ -1557,6 +1559,7 @@ var xgui = function ( p ) {
 				if (y > this.frameheight && y < this.frameheight+this.colorheight) {
 					this.mouseMove(x,y);
 					this.oldColor = this.hex;
+					this.oldCurrent = this.current;
 				}
 			}
 		}
@@ -1613,10 +1616,14 @@ var xgui = function ( p ) {
 		}
 
 		if (!old) {
-			var ceilx = (Math.floor(x/this.size) * this.size) + Math.ceil(this.size*0.5);
-			var ceily = (Math.floor((y-this.frameheight)/this.size) * this.size) + Math.ceil(this.size*0.5);
+			var px = Math.floor(x/this.size);
+			var py = Math.floor((y-this.frameheight)/this.size);
+			var fx = (px * this.size) + Math.ceil(this.size*0.5);
+			var fy = (py * this.size) + Math.ceil(this.size*0.5);
 			
-			var pixel = context.getImageData(this.x+1+ceilx, this.y+this.frameheight+1+ceily, 1, 1).data;
+			this.current = (py*this.maxWidth) + px;
+
+			var pixel = context.getImageData(this.x+1+fx, this.y+this.frameheight+1+fy, 1, 1).data;
 			this.hex = colorToHex("rgb("+pixel[0]+","+pixel[1]+","+pixel[2]+")");
 		}
 
