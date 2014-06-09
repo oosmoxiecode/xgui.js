@@ -70,8 +70,22 @@
 		var b1 = new gui.Button( {x: 460, y: 60, text: "Another Button", height: 30 } );
 
 		// ColorPicker2
-		var cp1 = new gui.ColorPicker2( {x: 210, y: 180, width: 170, height: 50, framewidth:20, frameheight:20 } );
-		var cp2 = new gui.ColorPicker2( {x: 210, y: 210, width: 170, height: 50, framewidth:20, frameheight:20 } );
+		var cp1 = new gui.ColorPicker2( {x: 210, y: 160, width: 170, height: 50, framewidth:20, frameheight:20 } );
+		var cp2 = new gui.ColorPicker2( {x: 210, y: 190, width: 170, height: 50, framewidth:20, frameheight:20 } );
+
+		// ColorPicker3
+		var palette = [];
+		for (r = 0; r < 36; r++) {
+           	palette.push( colorToHex("rgb("+r*7+","+0+","+0+")") );
+        }
+		for (g = 0; g < 36; g++) {
+           	palette.push( colorToHex("rgb("+0+","+g*7+","+0+")") );
+        }
+		/*for (b = 0; b < 36; b++) {
+           	palette.push( colorToHex("rgb("+0+","+0+","+b*7+")") );
+        }*/
+
+		var cp3 = new gui.ColorPicker3( {x: 210, y: 220, framewidth:20, frameheight:20, palette: palette, maxWidth: 12, size: 16 } );
 
 		// Graph
 		var g0 = new gui.Graph( {x: 315, y: 140, max: 100, min: -100, width: 130 } );

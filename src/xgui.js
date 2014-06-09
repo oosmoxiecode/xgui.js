@@ -132,7 +132,7 @@ var xgui = function ( p ) {
 			if (!mouseDownMap[inputid]) {
 				if (mouseHitIdMap[inputid] != null) {
 					var o = pool[mouseHitIdMap[inputid]];
-					if (o.name == "ColorPicker2") {
+					if (o.name == "ColorPicker2" || o.name == "ColorPicker3") {
 						var m = canvas.relativeMouseCoords(mouse);
 						//var m = {x: mouse.clientX - mouse.target.offsetLeft, y: mouse.clientY - mouse.target.offsetTop};
 						o.mouseMove(m.x-o.x,m.y-o.y);
@@ -203,7 +203,7 @@ var xgui = function ( p ) {
 						// check old id
 						if (poolId != null) {
 							var old = pool[poolId];
-							if (old.name == "ColorPicker2") {
+							if (old.name == "ColorPicker2" || old.name == "ColorPicker3") {
 								old.mouseUp();
 							}
 						}
@@ -1112,6 +1112,108 @@ var xgui = function ( p ) {
 	}
 
 	/*
+	 * ColorPicker
+	 */
+
+	this.ColorPicker = function ( p ) {
+		Base.call( this, p );
+
+		this.name = "ColorPicker";
+		this.framewidth = p.framewidth || 10;
+		this.frameheight = p.frameheight || 10;		
+		this.width = p.width || 100;
+		this.height = p.height || 20;
+		this.r = (p.r || p.r === 0) ? p.r : 255;
+		this.g = (p.g || p.g === 0) ? p.g : 255;
+		this.b = (p.b || p.b === 0) ? p.b : 255;
+		this.hex = p.hex || colorToHex("rgb("+this.r+","+this.g+","+this.b+")");
+		this.value = new Value(this.hex);
+		this.draw();
+	}
+
+	this.ColorPicker.prototype = new Base(); 
+	this.ColorPicker.prototype.constructor = this.ColorPicker;
+
+	this.ColorPicker.prototype.draw = function() {
+		context.clearRect(this.x,this.y,this.width,this.height+this.frameheight+4);
+
+		// frame
+		context.strokeStyle = bgColor;
+		context.lineWidth = 2.0;
+		context.strokeRect(this.x, this.y, this.width, this.height);
+		
+		// gradient colors
+		var gradient = context.createLinearGradient(this.x, this.y, this.x+this.width, this.y);
+		var offset = 1/6;
+		var index = 0;
+		gradient.addColorStop(offset*index++, "rgb(255, 0, 0)");	// red
+		gradient.addColorStop(offset*index++, "rgb(255, 255, 0)");	// yellow
+		gradient.addColorStop(offset*index++, "rgb(0, 255, 0)");	// green
+		gradient.addColorStop(offset*index++, "rgb(0, 255, 255)");	// cyan
+		gradient.addColorStop(offset*index++, "rgb(0, 0, 255)");	// blue
+		gradient.addColorStop(offset*index++, "rgb(255, 0, 255)");	// magenta
+		gradient.addColorStop(offset*index++, "rgb(255, 0, 0)");	// red
+		context.fillStyle = gradient;
+		context.fillRect(this.x, this.y, this.width, this.height);
+
+		var onepixel = 1/(this.height/2);
+
+		// gradient white overlay
+		var gradient = context.createLinearGradient(this.x, this.y, this.x, this.y+(this.height/2));
+		gradient.addColorStop(0, "rgba(255, 255, 255, 1)");				// white
+		gradient.addColorStop(onepixel, "rgba(255, 255, 255, 1)");		// white
+		gradient.addColorStop(1, "rgba(255, 255, 255, 0)");				// alpha
+		context.fillStyle = gradient;
+		context.fillRect(this.x, this.y, this.width, (this.height/2));
+
+		// gradient black overlay
+		var gradient = context.createLinearGradient(this.x, this.y+(this.height/2), this.x, this.y+this.height);
+		gradient.addColorStop(0, "rgba(0, 0, 0, 0)");			// alpha
+		gradient.addColorStop(1-onepixel, "rgba(0, 0, 0, 1)");	// black
+		gradient.addColorStop(1, "rgba(0, 0, 0, 1)");			// black
+		context.fillStyle = gradient;
+		context.fillRect(this.x, this.y+(this.height/2), this.width, (this.height/2));
+
+		// current color
+		context.strokeStyle = bgColor;
+		context.lineWidth = 2.0;
+		context.strokeRect(this.x, this.y+this.height+4, this.framewidth, this.frameheight);
+		
+		context.fillStyle = "#"+this.value.v;
+		context.fillRect(this.x, this.y+this.height+4, this.framewidth, this.frameheight);
+
+		// label
+		var addy = Math.round( Math.max(0, this.frameheight - 10)*0.5 );
+
+		context.fillStyle = bgColor;
+		context.font = font;
+		context.textBaseline = "alphabetic";
+		context.textAlign = "left";
+		context.fillText("#"+this.value.v.toUpperCase(), this.x+this.framewidth+4, this.y+this.height+13+addy);
+
+	}
+
+	this.ColorPicker.prototype.mouseDown = function(x,y) {
+		if (x < 0) x = 0;
+		if (x > this.width-1) x = this.width-1;
+		if (y < 0) y = 0;
+		if (y > this.height-1) y = this.height-1;
+
+		var pixel = context.getImageData(this.x+x, this.y+y, 1, 1).data;
+		this.r = pixel[0];
+		this.g = pixel[1];
+		this.b = pixel[2];
+		this.hex = colorToHex("rgb("+this.r+","+this.g+","+this.b+")");
+		this.value.v = this.hex;
+		this.value.updateBind();
+		this.draw();
+	}
+
+	this.ColorPicker.prototype.mouseUp = function() {
+		this.value.updateBind(true);
+	}
+
+	/*
 	 * ColorPicker2
 	 */
 
@@ -1312,106 +1414,193 @@ var xgui = function ( p ) {
 		this.value.updateBind(true);
 	}
 
-
 	/*
-	 * ColorPicker
+	 * ColorPicker3
 	 */
 
-	this.ColorPicker = function ( p ) {
+	this.ColorPicker3 = function ( p ) {
 		Base.call( this, p );
 
-		this.name = "ColorPicker";
+		this.name = "ColorPicker3";
 		this.framewidth = p.framewidth || 10;
-		this.frameheight = p.frameheight || 10;		
-		this.width = p.width || 100;
-		this.height = p.height || 20;
-		this.r = (p.r || p.r === 0) ? p.r : 255;
-		this.g = (p.g || p.g === 0) ? p.g : 255;
-		this.b = (p.b || p.b === 0) ? p.b : 255;
-		this.hex = p.hex || colorToHex("rgb("+this.r+","+this.g+","+this.b+")");
+		this.frameheight = p.frameheight || 10;
+		this.maxWidth = p.maxWidth || 12;
+		this.size = p.size || 10;
+		this.palette = p.palette || ["ffffff", "000000"];
+		this.colorwidth = this.maxWidth * this.size;
+		this.colorheight = Math.ceil(this.palette.length/this.maxWidth)*this.size;
+		this.width = this.framewidth;
+		this.height = this.frameheight;
+		this.current = p.current || 0;
+		if (this.current >= this.palette.length) this.current = this.palette.length-1;
+		this.open = false;
+		this.mousehack = false;
+		this.lastTime = 0;
+		this.hex = this.palette[this.current];
+		this.oldColor = this.hex;
 		this.value = new Value(this.hex);
 		this.draw();
+
+
 	}
 
-	this.ColorPicker.prototype = new Base(); 
-	this.ColorPicker.prototype.constructor = this.ColorPicker;
+	this.ColorPicker3.prototype = new Base(); 
+	this.ColorPicker3.prototype.constructor = this.ColorPicker3;
 
-	this.ColorPicker.prototype.draw = function() {
-		context.clearRect(this.x,this.y,this.width,this.height+this.frameheight+4);
+	this.ColorPicker3.prototype.draw = function() {
+		context.clearRect(this.x-1,this.y-1,this.framewidth+60,this.height+3);
+		context.clearRect(this.x-1,this.y+this.frameheight,this.colorwidth+2,this.colorheight+3);
+
 
 		// frame
 		context.strokeStyle = bgColor;
 		context.lineWidth = 2.0;
-		context.strokeRect(this.x, this.y, this.width, this.height);
-		
-		// gradient colors
-		var gradient = context.createLinearGradient(this.x, this.y, this.x+this.width, this.y);
-		var offset = 1/6;
-		var index = 0;
-		gradient.addColorStop(offset*index++, "rgb(255, 0, 0)");	// red
-		gradient.addColorStop(offset*index++, "rgb(255, 255, 0)");	// yellow
-		gradient.addColorStop(offset*index++, "rgb(0, 255, 0)");	// green
-		gradient.addColorStop(offset*index++, "rgb(0, 255, 255)");	// cyan
-		gradient.addColorStop(offset*index++, "rgb(0, 0, 255)");	// blue
-		gradient.addColorStop(offset*index++, "rgb(255, 0, 255)");	// magenta
-		gradient.addColorStop(offset*index++, "rgb(255, 0, 0)");	// red
-		context.fillStyle = gradient;
-		context.fillRect(this.x, this.y, this.width, this.height);
-
-		var onepixel = 1/(this.height/2);
-
-		// gradient white overlay
-		var gradient = context.createLinearGradient(this.x, this.y, this.x, this.y+(this.height/2));
-		gradient.addColorStop(0, "rgba(255, 255, 255, 1)");				// white
-		gradient.addColorStop(onepixel, "rgba(255, 255, 255, 1)");		// white
-		gradient.addColorStop(1, "rgba(255, 255, 255, 0)");				// alpha
-		context.fillStyle = gradient;
-		context.fillRect(this.x, this.y, this.width, (this.height/2));
-
-		// gradient black overlay
-		var gradient = context.createLinearGradient(this.x, this.y+(this.height/2), this.x, this.y+this.height);
-		gradient.addColorStop(0, "rgba(0, 0, 0, 0)");			// alpha
-		gradient.addColorStop(1-onepixel, "rgba(0, 0, 0, 1)");	// black
-		gradient.addColorStop(1, "rgba(0, 0, 0, 1)");			// black
-		context.fillStyle = gradient;
-		context.fillRect(this.x, this.y+(this.height/2), this.width, (this.height/2));
+		context.strokeRect(this.x, this.y, this.framewidth, this.frameheight);	
 
 		// current color
-		context.strokeStyle = bgColor;
-		context.lineWidth = 2.0;
-		context.strokeRect(this.x, this.y+this.height+4, this.framewidth, this.frameheight);
-		
 		context.fillStyle = "#"+this.value.v;
-		context.fillRect(this.x, this.y+this.height+4, this.framewidth, this.frameheight);
+		context.fillRect(this.x, this.y, this.framewidth, this.frameheight);
 
 		// label
-		var addy = Math.round( Math.max(0, this.frameheight - 10)*0.5 );
+		var addy = Math.round( Math.max(0, this.frameheight - 11)*0.5 );
 
 		context.fillStyle = bgColor;
 		context.font = font;
 		context.textBaseline = "alphabetic";
 		context.textAlign = "left";
-		context.fillText("#"+this.value.v.toUpperCase(), this.x+this.framewidth+4, this.y+this.height+13+addy);
+		context.fillText("#"+this.value.v.toUpperCase(), this.x+this.framewidth+4, this.y+9+addy);
+
+		if (this.open) {
+			var extray = 1;
+			
+			var x = 0;
+			var y = 0;
+
+			// selected one
+			var selected = this.palette.indexOf(this.hex);
+			var selectedPosition = {}; 
+
+			for (var i = 0; i < this.palette.length; i++) {
+				
+				if (i == selected) selectedPosition = {x:x, y:y};
+				context.strokeRect(this.x+(x*this.size), this.y+this.frameheight+(y*this.size)+extray, this.size, this.size);	
+
+				context.fillStyle = "#"+this.palette[i];
+				context.fillRect(this.x+(x*this.size), this.y+this.frameheight+(y*this.size)+extray, this.size, this.size);
+
+				++x;
+				if (x >= this.maxWidth) {
+					x = 0;
+					++y;
+				}
+
+			}
+
+			context.strokeStyle = "#ffffff";
+			context.lineWidth = 2.0;
+			context.strokeRect(this.x+(selectedPosition.x*this.size), this.y+this.frameheight+(selectedPosition.y*this.size)+extray, this.size, this.size);	
+
+		}
 
 	}
 
-	this.ColorPicker.prototype.mouseDown = function(x,y) {
-		if (x < 0) x = 0;
-		if (x > this.width-1) x = this.width-1;
-		if (y < 0) y = 0;
-		if (y > this.height-1) y = this.height-1;
+	this.ColorPicker3.prototype.setOldColor = function() {
+		this.hex = this.oldColor;	
+	}
 
-		var pixel = context.getImageData(this.x+x, this.y+y, 1, 1).data;
-		this.r = pixel[0];
-		this.g = pixel[1];
-		this.b = pixel[2];
-		this.hex = colorToHex("rgb("+this.r+","+this.g+","+this.b+")");
+	this.ColorPicker3.prototype.mouseDown = function(x,y) {
+		var nowTimer = new Date().getTime();
+		if (nowTimer-this.lastTime < 200) {
+			return;
+		}
+
+		if (this.open) {
+			if (x > 0 && x < this.colorwidth-1) {
+				if (y > this.frameheight && y < this.frameheight+this.colorheight) {
+					this.mouseMove(x,y);
+					this.oldColor = this.hex;
+				}
+			}
+		}
+
+		if (!this.open && y < this.frameheight) {
+			this.open = true;
+		} else if (this.open) {
+			this.open = false;
+		}
+
+		if (this.open) {
+			this.width = this.colorwidth;
+			this.height = this.frameheight+this.colorheight;
+		} else {
+			this.width = this.framewidth;
+			this.height = this.frameheight;
+		}
+
+		this.draw();
+
+		this.mousehack = false;
+
+		this.lastTime = new Date().getTime();
+		
+		if (!this.open) {
+			for (var i=0; i<pool.length; ++i ) {
+				var o = pool[i];
+				o.draw();
+			}
+		}
+	}
+
+	this.ColorPicker3.prototype.mouseMove = function(x,y) {
+		var old = false;
+		if (x < 0) {
+			x = 0;
+			this.setOldColor();
+			old = true;
+		}
+		if (x > this.colorwidth-1) {
+			x = this.colorwidth-1;
+			this.setOldColor();
+			old = true;
+		}
+		if (y <= this.frameheight) {
+			y = this.frameheight;
+			this.setOldColor();
+			old = true;
+		}
+		if (y >= this.frameheight+this.colorheight) {
+			y = this.frameheight+this.colorheight;
+			this.setOldColor();
+			old = true;
+		}
+
+		if (!old) {
+			var ceilx = (Math.floor(x/this.size) * this.size) + Math.ceil(this.size*0.5);
+			var ceily = (Math.floor((y-this.frameheight)/this.size) * this.size) + Math.ceil(this.size*0.5);
+			
+			var pixel = context.getImageData(this.x+1+ceilx, this.y+this.frameheight+1+ceily, 1, 1).data;
+			this.hex = colorToHex("rgb("+pixel[0]+","+pixel[1]+","+pixel[2]+")");
+		}
+
 		this.value.v = this.hex;
 		this.value.updateBind();
+
 		this.draw();
 	}
 
-	this.ColorPicker.prototype.mouseUp = function() {
+	this.ColorPicker3.prototype.mouseUp = function(inputid) {
+		if (!this.open) {
+			mouseHitIdMap[inputid] = null;
+		}
+		if (this.mousehack) {
+			this.setOldColor();
+
+			this.mouseDown();
+			
+			mouseHitIdMap[inputid] = null;
+		}
+
+		this.mousehack = true;
 		this.value.updateBind(true);
 	}
 
@@ -2324,6 +2513,7 @@ var xgui = function ( p ) {
 		Knob: this.Knob,
 		ColorPicker: this.ColorPicker,
 		ColorPicker2: this.ColorPicker2,
+		ColorPicker3: this.ColorPicker3,
 		TrackPad: this.TrackPad,
 		Button: this.Button,
 		ImageButton: this.ImageButton,
