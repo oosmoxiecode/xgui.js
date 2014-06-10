@@ -31,7 +31,6 @@ var xgui = function ( p ) {
 	container.style.height = ""+this.height+"px";
 	container.setAttribute("id", containerId);
 	container.style.touchAction = "none";
-	//touch-action: none;
 
 	canvas = document.createElement("canvas");
 	canvas.width = this.width;
@@ -439,7 +438,6 @@ var xgui = function ( p ) {
 		context.save();
 		context.translate(this.x, this.y);
 
-		//context.clearRect(0,0,this.width,this.height);
 		context.fillStyle = bgColor;
 		context.fillRect(0,0,this.width,this.height);
 
@@ -463,8 +461,6 @@ var xgui = function ( p ) {
 		var p2 = this.getPositionFromValue(this.value2.v);
 
 		context.fillRect(p1,0,p2-p1,this.height);
-
-		//context.save();
 
 		// mask
 		context.beginPath();
@@ -748,7 +744,6 @@ var xgui = function ( p ) {
 		context.save();
 		context.translate(this.x, this.y);
 
-		//context.clearRect(0,0,this.width,this.height);
 		context.fillStyle = bgColor;
 		context.fillRect(0,0,this.width,this.height);
 		
@@ -856,8 +851,6 @@ var xgui = function ( p ) {
 
 		// get old
 		var old = context.getImageData(this.x, this.y, this.width, this.height);
-		
-		//context.clearRect(this.x,this.y,this.width,this.height);
 
 		// frame
 		context.strokeStyle = bgColor;
@@ -973,8 +966,6 @@ var xgui = function ( p ) {
 
 		context.save();
 		context.translate(this.x, this.y);
-
-		//context.clearRect(0,0,this.width,this.height);
 
 		// frame
 		context.strokeStyle = bgColor;
@@ -1658,8 +1649,6 @@ var xgui = function ( p ) {
 
 		this.name = "Knob";
 		this.radius = p.radius || 15;
-		//this.centerx = this.x+this.radius;
-		//this.centery = this.y+this.radius;
 		this.width = this.radius*2;
 		this.height = this.radius*2;
 		this.min = p.min || 0;
@@ -1968,7 +1957,6 @@ var xgui = function ( p ) {
 		context.save();
 		context.translate(this.x, this.y);	
 
-		//context.clearRect(0,0,this.width,this.height);
 		context.fillStyle = bgColor;
 		context.fillRect(0,0,this.width,this.height);
 
@@ -1984,8 +1972,6 @@ var xgui = function ( p ) {
 		var p = this.getPositionFromValue();
 		context.fillStyle = frontColor;
 		context.fillRect(0,0,p,this.height);
-
-		//context.save();
 
 		context.beginPath();
 		context.rect(0,0,p,this.height);
@@ -2052,7 +2038,6 @@ var xgui = function ( p ) {
 		context.save();
 		context.translate(this.x, this.y);
 
-		//context.clearRect(0,0,this.width,this.height);
 		context.fillStyle = bgColor;
 		context.fillRect(0,0,this.width,this.height);
 
@@ -2075,7 +2060,6 @@ var xgui = function ( p ) {
 		context.fillStyle = frontColor;
 		context.fillRect(0,p,this.width,this.height-p);
 
-		//context.save();
 		context.translate(9+addx, this.height-1);
 		context.rotate(-Math.PI/2);
 
@@ -2126,8 +2110,6 @@ var xgui = function ( p ) {
 		this.value2 = new Value(0);
 		this.radius = p.radius || 50;
 		this.innerRadius = p.innerRadius || this.radius*0.65;
-		//this.centerx = this.x+this.radius;
-		//this.centery = this.y+this.radius;
 		this.width = this.radius*2;
 		this.height = this.radius*2;
 		this.stickx = 0;
@@ -2261,8 +2243,6 @@ var xgui = function ( p ) {
 		this.name = "CircularSlider";
 		this.radius = p.radius || 25;
 		this.innerRadius = p.innerRadius || this.radius - 10;
-		//this.centerx = this.x+this.radius;
-		//this.centery = this.y+this.radius;
 		this.width = this.radius*2;
 		this.height = this.radius*2;
 		this.min = p.min || 0;
@@ -2413,7 +2393,6 @@ var xgui = function ( p ) {
 		context.save();
 		context.translate(this.x, this.y);
 
-		//context.clearRect(0,0,this.width,this.height);
 		// background
 		context.fillStyle = bgColor;
 		context.fillRect(0,0,this.width,this.height);
