@@ -50,6 +50,7 @@ CheckBox,
 Knob,
 ColorPicker,
 ColorPicker2,
+ColorPicker3,
 TrackPad,
 Button,
 ImageButton,
@@ -65,7 +66,7 @@ Scrollwheel.**
 
 **History**
 
-r2 - Multitouch should now work across Android, iOS and Windows 8.x. Plus various platform specific bugfixes. Added CircularSlider and Scrollwheel. Added methods for: onResize, disableEvents, enableEvents and dispose.
+r2 - Multitouch should now work across Android, iOS and Windows 8.x. Plus various platform specific bugfixes. Added CircularSlider, Scrollwheel and ColorPicker3. Added methods for: onResize, disableEvents, enableEvents and dispose.
 
 r1 - Made it touch friendly, so multitouch should hopefully work(Tested on Nexus 4/7). Added Joystick, like an analog stick. Fixed various bugs and stuff.
 
