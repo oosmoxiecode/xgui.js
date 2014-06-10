@@ -11,9 +11,10 @@
 			background:#cdcdcd;
 		}
 	</style>
-		
+	
 	<script type="application/javascript" src="../src/xgui.js"></script>
 	<!-- <script type="application/javascript" src="../build/xgui.min.js"></script> -->
+	<script type="application/javascript" src="RequestAnimationFrame.js"></script>	
 
  </HEAD>
 
@@ -74,18 +75,29 @@
 		var cp2 = new gui.ColorPicker2( {x: 210, y: 190, width: 170, height: 50, framewidth:20, frameheight:20 } );
 
 		// ColorPicker3
+		// We need to feed it a palette-array in the form of: [ffffff, 000000, ff0000, etc...]
+		// and the color picker will just output them left to rigth, top to bottom, and "linebreak" at the 'maxWidth'
 		var palette = [];
-		for (r = 0; r < 36; r++) {
-           	palette.push( colorToHex("rgb("+r*7+","+0+","+0+")") );
-        }
-		for (g = 0; g < 36; g++) {
-           	palette.push( colorToHex("rgb("+0+","+g*7+","+0+")") );
-        }
-		/*for (b = 0; b < 36; b++) {
-           	palette.push( colorToHex("rgb("+0+","+0+","+b*7+")") );
-        }*/
+        var m = 25;
+        for (var h = 0; h < 6; h++) {
+	        for (var box = 0; box < 3; box++) {
+	        	for (var c = 0; c < 6; c++) {
+	        		
+	        		if (box == 0) {
+	        			palette.push( colorToHex("rgb("+(c+1*h)*m+","+0+","+0+")") );
+	        		}
+	        		if (box == 1) {
+	        			palette.push( colorToHex("rgb("+0+","+(c+1*h)*m+","+0+")") );
+	        		}
+	        		if (box == 2) {
+	        			palette.push( colorToHex("rgb("+0+","+0+","+(c+1*h)*m+")") );
+	        		}
 
-		var cp3 = new gui.ColorPicker3( {x: 210, y: 220, framewidth:20, frameheight:20, palette: palette, maxWidth: 12, size: 16 } );
+	        	}
+	        }
+        }
+
+		var cp3 = new gui.ColorPicker3( {x: 210, y: 220, framewidth:20, frameheight:20, palette: palette, maxWidth: 18, size: 16 } );
 
 		// Graph
 		var g0 = new gui.Graph( {x: 315, y: 140, max: 100, min: -100, width: 130 } );
@@ -115,7 +127,8 @@
 		var joy1 = new gui.Joystick( {x:345, y:250} );		
 
 		// CircularSlider
-		var cs0 = new gui.CircularSlider( {x:470, y:285, value: 40} );		
+		var cs0 = new gui.CircularSlider( {x:460, y:285, value: 40} );		
+		var cs1 = new gui.CircularSlider( {x:520, y:285, value: 0.6, max: 1.0, min: -1.0, decimals: 2} );		
 
 		// Scrollwheel
 		var sw0 = new gui.Scrollwheel( {x:305, y:260} );		
@@ -153,9 +166,11 @@
 
 
 		// Run a dummy update
-		setInterval(tempUpdate, 1000/60);
+		tempUpdate();
 
 		function tempUpdate() {
+
+			requestAnimationFrame( tempUpdate );
 
 			testObj1.a = Math.sin(test+=0.03)*75; // sin wave for the Graph
 			testObj1.b = "Label with value: " + Math.round(testObj1.a); // number for the Label

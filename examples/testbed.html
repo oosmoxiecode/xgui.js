@@ -14,6 +14,7 @@
 		
 	<script type="application/javascript" src="../src/xgui.js"></script>
 	<!-- <script type="application/javascript" src="../build/xgui.min.js"></script> -->
+	<script type="application/javascript" src="RequestAnimationFrame.js"></script>	
 
  </HEAD>
 
@@ -160,9 +161,11 @@
 		l0.updateInterval = 40;
 
 		// Run a dummy update
-		setInterval(tempUpdate, 1000/60);
+		tempUpdate();
 
 		function tempUpdate() {
+
+			requestAnimationFrame( tempUpdate );
 
 			testObj1.a = Math.sin(test+=0.03)*75; // sin wave for the Graph
 			testObj1.b = "Label with value: " + Math.round(testObj1.a); // number for the Label
