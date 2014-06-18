@@ -52,9 +52,9 @@ var xgui = function ( p ) {
 		container.removeEventListener( 'mouseup', mouseUp, false );
 
 		// ie events
-		container.addEventListener( 'MSPointerMove', touchMove, false );
-		container.addEventListener( 'MSPointerDown', touchStart, false );
-		container.addEventListener( 'MSPointerUp', touchEnd, false );
+		container.removeEventListener( 'MSPointerMove', touchMove, false );
+		container.removeEventListener( 'MSPointerDown', touchStart, false );
+		container.removeEventListener( 'MSPointerUp', touchEnd, false );
 
 	}
 
