@@ -42,38 +42,38 @@ var xgui = function ( p ) {
 	this.disableEvents = function () {
 
 		// touch events
-		document.removeEventListener( 'touchmove', touchMove, false );
+		container.removeEventListener( 'touchmove', touchMove, false );
 		container.removeEventListener( 'touchstart', touchStart, false );
-		document.removeEventListener( 'touchend', touchEnd, false );
+		container.removeEventListener( 'touchend', touchEnd, false );
 		
 		// mouse events
-		document.removeEventListener( 'mousemove', mouseMove, false );
+		container.removeEventListener( 'mousemove', mouseMove, false );
 		container.removeEventListener( 'mousedown', mouseDown, false );
-		document.removeEventListener( 'mouseup', mouseUp, false );
+		container.removeEventListener( 'mouseup', mouseUp, false );
 
 		// ie events
-		document.addEventListener( 'MSPointerMove', touchMove, false );
+		container.addEventListener( 'MSPointerMove', touchMove, false );
 		container.addEventListener( 'MSPointerDown', touchStart, false );
-		document.addEventListener( 'MSPointerUp', touchEnd, false );
+		container.addEventListener( 'MSPointerUp', touchEnd, false );
 
 	}
 
 	this.enableEvents = function () {
 
 		// touch events
-		document.addEventListener( 'touchmove', touchMove, false );
+		container.addEventListener( 'touchmove', touchMove, false );
 		container.addEventListener( 'touchstart', touchStart, false );
-		document.addEventListener( 'touchend', touchEnd, false );
+		container.addEventListener( 'touchend', touchEnd, false );
 			
 		// mouse events
-		document.addEventListener( 'mousemove', mouseMove, false );
+		container.addEventListener( 'mousemove', mouseMove, false );
 		container.addEventListener( 'mousedown', mouseDown, false );
-		document.addEventListener( 'mouseup', mouseUp, false );
+		container.addEventListener( 'mouseup', mouseUp, false );
 
 		// ie events
-		document.addEventListener( 'MSPointerMove', touchMove, false );
+		container.addEventListener( 'MSPointerMove', touchMove, false );
 		container.addEventListener( 'MSPointerDown', touchStart, false );
-		document.addEventListener( 'MSPointerUp', touchEnd, false );
+		container.addEventListener( 'MSPointerUp', touchEnd, false );
 
 	}
 
