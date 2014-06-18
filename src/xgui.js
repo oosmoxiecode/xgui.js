@@ -43,14 +43,14 @@ var xgui = function ( p ) {
 	this.disableEvents = function () {
 
 		// touch events
-		container.removeEventListener( 'touchmove', touchMove, false );
+		document.removeEventListener( 'touchmove', touchMove, false );
+		document.removeEventListener( 'touchend', touchEnd, false );
 		container.removeEventListener( 'touchstart', touchStart, false );
-		container.removeEventListener( 'touchend', touchEnd, false );
 		
 		// mouse events
-		container.removeEventListener( 'mousemove', mouseMove, false );
-		container.removeEventListener( 'mousedown', mouseDown, false );
-		container.removeEventListener( 'mouseup', mouseUp, false );
+		document.removeEventListener( 'mousemove', mouseMove, false );
+		document.removeEventListener( 'mousedown', mouseDown, false );
+		document.removeEventListener( 'mouseup', mouseUp, false );
 
 		// ie events
 		container.removeEventListener( 'MSPointerMove', touchMove, false );
@@ -62,14 +62,12 @@ var xgui = function ( p ) {
 	this.enableEvents = function () {
 
 		// touch events
-		container.addEventListener( 'touchmove', touchMove, false );
 		container.addEventListener( 'touchstart', touchStart, false );
-		container.addEventListener( 'touchend', touchEnd, false );
-			
+		document.addEventListener( 'touchend', touchEnd, false );
+
 		// mouse events
-		container.addEventListener( 'mousemove', mouseMove, false );
 		container.addEventListener( 'mousedown', mouseDown, false );
-		container.addEventListener( 'mouseup', mouseUp, false );
+		
 
 		// ie events
 		container.addEventListener( 'MSPointerMove', touchMove, false );
@@ -87,10 +85,17 @@ var xgui = function ( p ) {
 
 	function touchStart (event) {
 		onMouseDown(event, true);
+
+		document.addEventListener( 'touchmove', touchMove, false );
+		
 	}
 
 	function touchEnd (event) {
 		onMouseUp(event, true);
+
+		if( event.changedTouches.length === 0 ) {
+			document.removeEventListener( 'touchmove', touchMove, false );
+		}
 	}
 
 	function mouseMove (event) {
@@ -98,11 +103,18 @@ var xgui = function ( p ) {
 	}
 
 	function mouseDown (event) {
+
 		onMouseDown(event);
+
+		document.addEventListener( 'mousemove', mouseMove, false );
+		document.addEventListener( 'mouseup', mouseUp, false );
 	}
 
 	function mouseUp (event) {
 		onMouseUp(event);
+
+		document.removeEventListener( 'mousemove', mouseMove, false );
+		document.removeEventListener( 'mouseup', mouseUp, false );
 	}
 
 	function onMouseMove ( event, isTouchEvent ) {
