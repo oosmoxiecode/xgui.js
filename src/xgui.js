@@ -69,10 +69,8 @@ var xgui = function ( p ) {
 		container.addEventListener( 'mousedown', mouseDown, false );
 		
 
-		// ie events
-		container.addEventListener( 'MSPointerMove', touchMove, false );
+		// ie events		
 		container.addEventListener( 'MSPointerDown', touchStart, false );
-		container.addEventListener( 'MSPointerUp', touchEnd, false );
 
 	}
 
@@ -108,6 +106,9 @@ var xgui = function ( p ) {
 
 		document.addEventListener( 'mousemove', mouseMove, false );
 		document.addEventListener( 'mouseup', mouseUp, false );
+
+		container.addEventListener( 'MSPointerMove', touchMove, false );
+		container.addEventListener( 'MSPointerUp', touchEnd, false );
 	}
 
 	function mouseUp (event) {
@@ -115,6 +116,9 @@ var xgui = function ( p ) {
 
 		document.removeEventListener( 'mousemove', mouseMove, false );
 		document.removeEventListener( 'mouseup', mouseUp, false );
+
+		container.removeEventListener( 'MSPointerMove', touchMove, false );
+		container.removeEventListener( 'MSPointerUp', touchEnd, false );
 	}
 
 	function onMouseMove ( event, isTouchEvent ) {
@@ -367,7 +371,7 @@ var xgui = function ( p ) {
 	}
 
 
-	this.Matrix.prototype = new Base(); 
+	this.Matrix.prototype = new Base();
 	this.Matrix.prototype.constructor = this.Matrix;
 
 
