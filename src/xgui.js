@@ -1,10 +1,11 @@
+"use strict";
 /**
  * @author oosmoxiecode - http://oos.moxiecode.com/
  */
 
 var xgui = function ( p ) {
 
-	if (p == undefined) p = {};
+	if (p === undefined) p = {};
 
 	var container, canvas, context;
 	var containerId = p.id || "xgui_container";
@@ -17,7 +18,7 @@ var xgui = function ( p ) {
 	var font = "11px Arial";
 	var fontsm = "8px Arial";
 
-	var delta
+	var delta;
 	var time;
 	var oldTime;
 
@@ -108,6 +109,7 @@ var xgui = function ( p ) {
 		
 		event.preventDefault();
 
+		var m,o;
 		var mouse = event;
 
 		var loopNum = 1;
@@ -129,10 +131,10 @@ var xgui = function ( p ) {
 			}
 
 			if (!mouseDownMap[inputid]) {
-				if (mouseHitIdMap[inputid] != null) {
-					var o = pool[mouseHitIdMap[inputid]];
-					if (o.name == "ColorPicker2" || o.name == "ColorPicker3") {
-						var m = canvas.relativeMouseCoords(mouse);
+				if (mouseHitIdMap[inputid] !== null) {
+					o = pool[mouseHitIdMap[inputid]];
+					if ( o && (o.name == "ColorPicker2" || o.name == "ColorPicker3")) {
+						m = canvas.relativeMouseCoords(mouse);
 						//var m = {x: mouse.clientX - mouse.target.offsetLeft, y: mouse.clientY - mouse.target.offsetTop};
 						o.mouseMove(m.x-o.x,m.y-o.y);
 					}
@@ -140,12 +142,12 @@ var xgui = function ( p ) {
 				return;
 			}
 
-			var m = canvas.relativeMouseCoords(mouse);
+			m = canvas.relativeMouseCoords(mouse);
 			//var m = {x: mouse.clientX - mouse.target.offsetLeft, y: mouse.clientY - mouse.target.offsetTop};
-			var o = pool[mouseHitIdMap[inputid]];
+			o = pool[mouseHitIdMap[inputid]];
 
-			if (o.name == "CheckBox" || o.name == "RadioButton" || o.name == "Button" || o.name == "ImageButton" || o.name == "Matrix") return;
-			if (o.name == "Stepper" && (o.mouseDownPlus || o.mouseDownMinus)) {
+			if ( o && o.name == "CheckBox" || o.name == "RadioButton" || o.name == "Button" || o.name == "ImageButton" || o.name == "Matrix") return;
+			if ( o && o.name == "Stepper" && (o.mouseDownPlus || o.mouseDownMinus)) {
 				return;
 			}
 
@@ -181,8 +183,8 @@ var xgui = function ( p ) {
 
 			// fix for textfields
 			if (event.target == container || event.target == canvas) {
-				if (mouseHitIdMap[inputid] != null) {
-					if (pool[mouseHitIdMap[inputid]].name != "InputText" && pool[mouseHitIdMap[inputid]].name != "DropDown") {
+				if (mouseHitIdMap[inputid] !== null) {
+					if ( pool[mouseHitIdMap[inputid]] && (pool[mouseHitIdMap[inputid]].name != "InputText" && pool[mouseHitIdMap[inputid]].name != "DropDown")) {
 						event.preventDefault();
 					}
 				} else {
@@ -202,7 +204,7 @@ var xgui = function ( p ) {
 						// check old id
 						if (poolId != null) {
 							var old = pool[poolId];
-							if (old.name == "ColorPicker2" || old.name == "ColorPicker3") {
+							if (old && (old.name == "ColorPicker2" || old.name == "ColorPicker3")) {
 								old.mouseUp();
 							}
 						}
@@ -259,7 +261,7 @@ var xgui = function ( p ) {
 	 * Base
 	 */
 
-	Base = function Base( p ) {
+	 function Base( p ) {
 		if (this.constructor == Base) return;
 		if (p == undefined) p = {};
 
@@ -274,10 +276,10 @@ var xgui = function ( p ) {
 	 * Value
 	 */
 
-	Value = function ( value ) {
+	function Value( value ) {
 
 		this.v = value;
-		this.bindArray = new Array();
+		this.bindArray = [];
 		this.receiver = false;
 		this.both = false;
 
