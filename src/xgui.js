@@ -63,12 +63,10 @@ var xgui = function ( p ) {
 
 		// touch events
 		container.addEventListener( 'touchstart', touchStart, false );
-		document.addEventListener( 'touchend', touchEnd, false );
 
 		// mouse events
 		container.addEventListener( 'mousedown', mouseDown, false );
 		
-
 		// ie events		
 		container.addEventListener( 'MSPointerDown', touchStart, false );
 
@@ -85,15 +83,29 @@ var xgui = function ( p ) {
 		onMouseDown(event, true);
 
 		document.addEventListener( 'touchmove', touchMove, false );
-		
+		document.addEventListener( 'touchend', touchEnd, false );
+
+		document.addEventListener( 'MSPointerMove', touchMove, false );
+		document.addEventListener( 'MSPointerUp', touchEnd, false );
+
 	}
 
 	function touchEnd (event) {
 		onMouseUp(event, true);
 
+		// ie hack
+		if (typeof event.changedTouches == "undefined") {
+			event.changedTouches = [event];
+		}
+
 		if( event.changedTouches.length === 0 ) {
 			document.removeEventListener( 'touchmove', touchMove, false );
+			document.removeEventListener( 'touchend', touchEnd, false );
+
+			document.removeEventListener( 'MSPointerMove', touchMove, false );
+			document.removeEventListener( 'MSPointerUp', touchEnd, false );
 		}
+
 	}
 
 	function mouseMove (event) {
@@ -107,18 +119,20 @@ var xgui = function ( p ) {
 		document.addEventListener( 'mousemove', mouseMove, false );
 		document.addEventListener( 'mouseup', mouseUp, false );
 
-		container.addEventListener( 'MSPointerMove', touchMove, false );
-		container.addEventListener( 'MSPointerUp', touchEnd, false );
 	}
 
 	function mouseUp (event) {
 		onMouseUp(event);
 
-		document.removeEventListener( 'mousemove', mouseMove, false );
-		document.removeEventListener( 'mouseup', mouseUp, false );
+		// workaround for ColorPicker's
+		var o = pool[mouseHitIdMap[0]];
 
-		container.removeEventListener( 'MSPointerMove', touchMove, false );
-		container.removeEventListener( 'MSPointerUp', touchEnd, false );
+		if (o !== undefined) {
+			if (o.name !== "ColorPicker2" && o.name !== "ColorPicker3") {
+				document.removeEventListener( 'mousemove', mouseMove, false );
+				document.removeEventListener( 'mouseup', mouseUp, false );
+			}
+		}
 	}
 
 	function onMouseMove ( event, isTouchEvent ) {
@@ -232,11 +246,10 @@ var xgui = function ( p ) {
 			
 		}
 
-
 	}
 
 	function onMouseUp ( event, isTouchEvent ) {
-		
+
 		var inputid = 0;
 
 		// ie hack
@@ -262,10 +275,13 @@ var xgui = function ( p ) {
 
 		} else {
 
-			mouseDownMap[inputid] = false;
+			mouseDownMap[inputid] = null;
 			if (mouseHitIdMap[inputid] != null) {
 				var o = pool[mouseHitIdMap[inputid]];
 				o.mouseUp( inputid );
+				if (o.name != "ColorPicker2" && o.name != "ColorPicker3") {
+					mouseHitIdMap[inputid] = null;
+				}
 			}
 
 		}
