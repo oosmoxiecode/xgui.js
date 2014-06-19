@@ -195,7 +195,7 @@ var xgui = function ( p ) {
 		var inputid = 0;
 
 		// ie hack
-		if (isTouchEvent && typeof event.changedTouches == "undefined") {
+		if (isTouchEvent && typeof event.changedTouches === "undefined") {
 			event.changedTouches = [event];
 		}
 
@@ -206,15 +206,15 @@ var xgui = function ( p ) {
 			if (isTouchEvent) {
 				mouse = event.changedTouches[t];
 				//inputid = mouse.identifier;
-				inputid = (typeof mouse.identifier != "undefined") ? mouse.identifier : (typeof mouse.pointerId != "undefined") ? mouse.pointerId : 0;
+				inputid = (typeof mouse.identifier !== "undefined") ? mouse.identifier : (typeof mouse.pointerId != "undefined") ? mouse.pointerId : 0;
 			}
 
 			var poolId = mouseHitIdMap[inputid];
 
 			// fix for textfields
-			if (event.target == container || event.target == canvas) {
-				if (mouseHitIdMap[inputid] !== null) {
-					if ( pool[mouseHitIdMap[inputid]] && (pool[mouseHitIdMap[inputid]].name != "InputText" && pool[mouseHitIdMap[inputid]].name != "DropDown")) {
+			if (event.target === container || event.target === canvas) {
+				if (mouseHitIdMap[inputid] !== null && mouseHitIdMap[inputid] !== undefined) {
+					if ( pool[mouseHitIdMap[inputid]] && (pool[mouseHitIdMap[inputid]].name !== "InputText" && pool[mouseHitIdMap[inputid]].name !== "DropDown")) {
 						event.preventDefault();
 					}
 				} else {
@@ -232,9 +232,9 @@ var xgui = function ( p ) {
 						o.mouseDown(m.x-o.x,m.y-o.y);
 						mouseDownMap[inputid] = true;
 						// check old id
-						if (poolId != null) {
+						if (poolId !== null) {
 							var old = pool[poolId];
-							if (old && (old.name == "ColorPicker2" || old.name == "ColorPicker3")) {
+							if (old && (old.name === "ColorPicker2" || old.name === "ColorPicker3")) {
 								old.mouseUp();
 							}
 						}
