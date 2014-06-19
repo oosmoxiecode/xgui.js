@@ -968,10 +968,9 @@ var xgui = function ( p ) {
 	}
 
 	this.ImageButton.prototype.mouseUp = function() {
-		this.value.updateBind(true);
 		this.mouseIsDown = false;
 		this.value.v = this.mouseIsDown;
-		this.value.updateBind();
+		this.value.updateBind(true);
 		this.draw();
 	}
 
@@ -1034,9 +1033,9 @@ var xgui = function ( p ) {
 	}
 
 	this.Button.prototype.mouseUp = function() {
-		this.value.updateBind(true);
 		this.mouseIsDown = false;
 		this.value.v = this.mouseIsDown;
+		this.value.updateBind(true);
 		this.draw();
 	}
 
